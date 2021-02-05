@@ -17,10 +17,7 @@ import Vue from 'vue';
 // internal dependencies
 import { AwaitLock } from './AwaitLock';
 import { MarketplaceService, MosaicMarketplace } from '@/services/MarketplaceService';
-import { ArticleEntry } from '@/services/CommunityService';
 import { Address, RepositoryFactory } from 'symbol-sdk';
-import { MetadataService } from '@/services/MetadataService';
-import { MetadataModel } from '@/core/database/entities/MetadataModel';
 
 const Lock = AwaitLock.create();
 
@@ -33,11 +30,13 @@ export default {
         initialized: false,
         mosaics: [],
         isFetchingMarketplace: false,
+        serviceAddress: Address.createFromRawAddress('TBXILOQ3AMTVWOQSIWDMCXD3S4L5QWPQU2TWZJI'),
     },
     getters: {
         getInitialized: (state) => state.initialized,
         isFetchingMarketplace: (state) => state.isFetchingMarketplace,
         allTokens: (state) => state.mosaics,
+        serviceAddress: (state) => state.serviceAddress,
     },
     mutations: {
         setInitialized: (state, initialized) => {
