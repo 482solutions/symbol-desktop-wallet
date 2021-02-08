@@ -33,7 +33,7 @@
 import { Component, Vue, Prop } from 'vue-property-decorator';
 
 @Component
-export default class NFTCardDisplay extends Vue {
+export default class NFTCardCollection extends Vue {
     @Prop({ required: true }) readonly title: string;
     @Prop({ required: true }) readonly cid: string;
     @Prop({ required: true }) readonly mosaicId: string;

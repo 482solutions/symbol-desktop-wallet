@@ -32,6 +32,7 @@ import StatisticsStore from '@/store/Statistics';
 import CommunityStore from '@/store/Community';
 import HarvestingStore from '@/store/Harvesting';
 import RestrictionStore from '@/store/Restriction';
+import MarketplaceStore from '@/store/Marketplace';
 import { onPeerConnection } from '@/store/plugins/onPeerConnection';
 // use AwaitLock for initialization routines
 import { AwaitLock } from '@/store/AwaitLock';
@@ -69,6 +70,7 @@ const AppStore = new Vuex.Store({
         aggregateTransaction: AggregateTransaction,
         harvesting: HarvestingStore,
         restriction: RestrictionStore,
+        marketplace: MarketplaceStore,
     },
     plugins: [onPeerConnection],
     actions: {
@@ -88,6 +90,7 @@ const AppStore = new Vuex.Store({
                 await dispatch('addressBook/initialize');
                 await dispatch('harvesting/initialize');
                 await dispatch('restriction/initialize');
+                await dispatch('marketplace/initialize');
             };
 
             // aquire async lock until initialized
@@ -109,6 +112,7 @@ const AppStore = new Vuex.Store({
                 dispatch('diagnostic/uninitialize'),
                 dispatch('harvesting/uninitialize'),
                 dispatch('restriction/uninitialize'),
+                dispatch('marketplace/uninitialize'),
             ]);
         },
     },

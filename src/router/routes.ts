@@ -358,16 +358,16 @@ export const routes: AppRoute[] = [
                 // @ts-ignore
                 component: () => import('@/views/pages/nft/NftDashboardPage/NftDashboardPage.vue'),
                 children: [
-                    // {
-                    //     path: '/marketplace',
-                    //     name: 'nft.marketplace',
-                    //     meta: {
-                    //         protected: true,
-                    //         title: 'page_title_marketplace',
-                    //     },
-                    //     // @ts-ignore
-                    //     component: () => import('@/views/pages/nft/NftMarketplacePage/NftMarketplacePage.vue'),
-                    // },
+                    {
+                        path: '/marketplace',
+                        name: 'nft.marketplace',
+                        meta: {
+                            protected: true,
+                            title: 'page_title_marketplace',
+                        },
+                        // @ts-ignore
+                        component: () => import('@/views/pages/nft/NftMarketplacePage/NftMarketplacePage.vue'),
+                    },
                     {
                         path: '/collections',
                         name: 'nft.collections',

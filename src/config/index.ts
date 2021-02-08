@@ -17,3 +17,4 @@
 export * from './AppConfig';
 export * from './FeesConfig';
 export * from './NetworkConfig';
+export * from './NFTConfig';

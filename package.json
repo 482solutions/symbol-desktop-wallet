@@ -52,6 +52,7 @@
         "decamelize": "^5.0.0",
         "electron-localshortcut": "^3.2.1",
         "file-saver": "^2.0.2",
+        "ipfs-http-client": "^49.0.1",
         "json2csv": "^5.0.1",
         "lodash": "^4.17.20",
         "request": "^2.88.0",
