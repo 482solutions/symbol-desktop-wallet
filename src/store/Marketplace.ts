@@ -30,7 +30,7 @@ export default {
         initialized: false,
         mosaics: [],
         isFetchingMarketplace: false,
-        serviceAddress: Address.createFromRawAddress('TBXILOQ3AMTVWOQSIWDMCXD3S4L5QWPQU2TWZJI'),
+        serviceAddress: Address.createFromRawAddress('TBQRYGBRTOIIOVQQQENMCTL2RLW2DV3UPQ3RG3I'),
     },
     getters: {
         getInitialized: (state) => state.initialized,
