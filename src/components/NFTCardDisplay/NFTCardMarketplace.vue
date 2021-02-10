@@ -36,7 +36,7 @@ export default class NFTCardMarketplace extends FormTransactionBase {
     @Prop({ required: true }) readonly mosaicId: string;
     @Prop({ required: true }) readonly price: number;
     @Prop({ required: true }) readonly endDate: number;
-    nftInfo = this.nftPrice(100, 0.05, 12);
+    nftInfo = NFTCardMarketplace.nftPrice(100, 0.05, 12);
     nftMosaicId = new MosaicId('nftMosaicIdHex');
     nftMosaicDivisibility = 0;
     networkMosaicDivisibility = 6;
@@ -52,14 +52,16 @@ export default class NFTCardMarketplace extends FormTransactionBase {
         title: 'Laptop',
         nftFile: 'MacBook Pro 16',
     };
-    private nftFileCid: string;
 
     buyMosaic(mosaicId: string) {
         alert('Mosaic to buy: ' + mosaicId);
     }
-    mounted() {
+
+    public async created() {
         this.currentTime = '00:00:00';
         setInterval(() => this.updateExpiresTime(), 1000);
+        this.$store.dispatch('network/LOAD_TRANSACTION_FEES');
+        this.resetForm();
     }
 
     updateExpiresTime() {
@@ -68,19 +70,10 @@ export default class NFTCardMarketplace extends FormTransactionBase {
         this.currentTime = `${duration.hours()}:${duration.minutes()}:${duration.seconds()}`;
     }
 
-    protected isJSONValid(jsonInString: string): boolean {
-        try {
-            JSON.parse(jsonInString);
-            return true;
-        } catch (e) {
-            return false;
-        }
-    }
     protected getTransactions(): Transaction[] {
         const nonce = MosaicNonce.createRandom();
         const mosaicId = MosaicId.createFromNonce(nonce, this.currentAccountAddress);
-        const aggregateTransactions = [this.createTransferServiceFeeTx(), this.buyerToSellerTx(), this.sellerToBuyerTx({ mosaicId })];
-        return aggregateTransactions;
+        return [this.createTransferServiceFeeTx(), this.buyerToSellerTx(), this.sellerToBuyerTx({ mosaicId })];
     }
     protected resetForm() {
         console.log('resetForm');
@@ -110,7 +103,7 @@ export default class NFTCardMarketplace extends FormTransactionBase {
         );
     }
 
-    private sellerToBuyerTx(tx: { mosaicId: MosaicId }): Transaction {
+    private sellerToBuyerTx(): Transaction {
         const maxFee = UInt64.fromUint(this.formItems.maxFee);
         return TransferTransaction.create(
             this.createDeadline(),
@@ -122,7 +115,7 @@ export default class NFTCardMarketplace extends FormTransactionBase {
         );
     }
 
-    private nftPrice(price: number, fee: number, time: timePeriodType) {
+    private static nftPrice(price: number, fee: number, time: timePeriodType) {
         const timeConstant = {
             6: 0,
             12: 2,
