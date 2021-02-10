@@ -37,7 +37,6 @@ export default class NFTCardMarketplace extends FormTransactionBase {
     @Prop({ required: true }) readonly price: number;
     @Prop({ required: true }) readonly endDate: number;
     nftInfo = NFTCardMarketplace.nftPrice(100, 0.05, 12);
-    nftMosaicId = new MosaicId('nftMosaicIdHex');
     nftMosaicDivisibility = 0;
     networkMosaicDivisibility = 6;
     holdMosaics: MosaicModel[];
@@ -73,7 +72,7 @@ export default class NFTCardMarketplace extends FormTransactionBase {
     protected getTransactions(): Transaction[] {
         const nonce = MosaicNonce.createRandom();
         const mosaicId = MosaicId.createFromNonce(nonce, this.currentAccountAddress);
-        return [this.createTransferServiceFeeTx(), this.buyerToSellerTx(), this.sellerToBuyerTx({ mosaicId })];
+        return [this.createTransferServiceFeeTx(), this.buyerToSellerTx(), this.sellerToBuyerTx({ mosaicId: mosaicId.toHex() })];
     }
     protected resetForm() {
         console.log('resetForm');
@@ -96,19 +95,19 @@ export default class NFTCardMarketplace extends FormTransactionBase {
         return TransferTransaction.create(
             this.createDeadline(),
             this.sellerAccountAddress,
-            [new Mosaic(this.nftMosaicId, UInt64.fromUint(this.nftInfo.amountToSeller * Math.pow(10, this.networkMosaicDivisibility)))],
+            [new Mosaic(this.networkMosaic, UInt64.fromUint(this.nftInfo.amountToSeller * Math.pow(10, this.networkMosaicDivisibility)))],
             PlainMessage.create(`send ${this.nftInfo.amountToSeller} symbol.xym to seller`),
             this.networkType,
             maxFee,
         );
     }
 
-    private sellerToBuyerTx(): Transaction {
+    private sellerToBuyerTx(tx: { mosaicId: string }): Transaction {
         const maxFee = UInt64.fromUint(this.formItems.maxFee);
         return TransferTransaction.create(
             this.createDeadline(),
             this.currentAccountAddress,
-            [new Mosaic(this.nftMosaicId, UInt64.fromUint(Math.pow(10, this.nftMosaicDivisibility)))],
+            [new Mosaic(new MosaicId(tx.mosaicId), UInt64.fromUint(Math.pow(10, this.nftMosaicDivisibility)))],
             PlainMessage.create('send 1 nft token to customer'),
             this.networkType,
             maxFee,
