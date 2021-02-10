@@ -21,8 +21,8 @@
                 <button
                     class="button-style inverted-button fat-button"
                     style="cursor: pointer;"
-                    type="submit"
-                    @click="transferMosaic(mosaicId)"
+                    :disabled="false"
+                    @click="showTokenDetails = true"
                 >
                     Transfer
                 </button>
@@ -36,23 +36,42 @@
                 </button>
             </div>
         </div>
+        <Modal
+            v-model="showTokenDetails"
+            class-name="vertical-center-modal"
+            :footer-hide="true"
+            :transfer="false"
+            @on-cancel="$emit('close-modal')"
+        >
+            <div class="token-details-modal">
+                <div class="modal-title">Transfer</div>
+                <FormTransferTransaction @on-confirmation-success="showTokenDetails = false" />
+            </div>
+        </Modal>
     </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
+import FormTransferTransaction from '@/views/forms/FormTransferTransaction/FormTransferTransaction.vue';
 
-@Component
+@Component({
+    components: {
+        FormTransferTransaction,
+    },
+})
 export default class NFTCardCollection extends Vue {
     @Prop({ required: true }) readonly title: string;
     @Prop({ required: true }) readonly cid: string;
     @Prop({ required: true }) readonly mosaicId: string;
     public fileBlob: string = '';
     public fileType: string = '';
-    transferMosaic(mosaicId: string) {
-        alert('Mosaic to transfer: ' + mosaicId);
-        console.log(this);
-    }
+    public showTokenDetails: boolean = false;
+
+    // transferMosaic(mosaicId: string) {
+    //     alert('Mosaic to transfer: ' + mosaicId);
+    //     console.log(this);
+    // }
     sellMosaic(mosaicId: string) {
         alert('Mosaic to sell: ' + mosaicId);
     }
