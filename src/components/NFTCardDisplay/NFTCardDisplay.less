@@ -15,6 +15,11 @@
  */
 
 @import '../../views/resources/css/variables.less';
+.token-link{
+    display: flex;
+    font-size: @bigFont;
+    border-radius: 5px;
+}
 
 .card-container {
     width: 293px;
@@ -87,11 +92,10 @@
         display: grid;
     }
 
-    .qrcode-preview {
-        width: 100%;
-        height: 200px;
-        border-bottom: 1px solid rgb(229, 232, 235);
-        overflow: hidden;
+    .token-preview {
+        position: absolute;
+        top: 50%;
+        left: 50%;
     }
 
     /deep/.form-row-inner-container {

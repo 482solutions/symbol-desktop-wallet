@@ -35,6 +35,15 @@
                             </FormRow>
 
                             <!-- Submit button -->
+                            <MaxFeeAndSubmit
+                                v-if="!isAggregate"
+                                v-model="formItems.maxFee"
+                                :hide-submit="hideSubmit"
+                                :calculated-recommended-fee="calculatedRecommendedFee"
+                                :calculated-highest-fee="calculatedHighestFee"
+                                @input="onChangeMaxFee"
+                                @button-clicked="handleSubmit(onSubmit)"
+                            />
                             <div v-else-if="!hideSave" class="ml-2" style="text-align: right;">
                                 <button
                                     type="submit"
@@ -52,8 +61,14 @@
                                 </template>
                             </FormRow>
                         </div>
-                        <div class="qrcode-preview">
-                            <img v-if="type && type.indexOf('image') !== -1" :src="src" :alt="title" :title="title" class="card-image" />
+                        <div class="token-preview">
+                            <img
+                                v-if="type && type.indexOf('image') !== -1"
+                                :src="src"
+                                :alt="title"
+                                :title="title"
+                                style="max-width: 315px;"
+                            />
                             <video
                                 v-else-if="type && type.indexOf('video') !== -1"
                                 autoplay
@@ -62,18 +77,10 @@
                                 :src="src"
                                 class="card-image"
                                 :type="type"
+                                style="max-width: 315px;"
                             />
                         </div>
                     </div>
-                    <MaxFeeAndSubmit
-                        v-if="!isAggregate"
-                        v-model="formItems.maxFee"
-                        :hide-submit="hideSubmit"
-                        :calculated-recommended-fee="calculatedRecommendedFee"
-                        :calculated-highest-fee="calculatedHighestFee"
-                        @button-clicked="handleSubmit(onSubmit)"
-                        @input="onChangeMaxFee"
-                    />
                 </form>
             </ValidationObserver>
 

@@ -45,9 +45,11 @@
         >
             <div class="token-details-modal">
                 <div class="modal-title">Transfer</div>
-                <a :href="'http://explorer.testnet.symboldev.network/mosaics/' + mosaicId" class="card-info-title" target="_blank">{{
-                    title
-                }}</a>
+
+                <router-link :to="'http://explorer.testnet.symboldev.network/mosaics/' + mosaicId" class="token-link" target="_blank">
+                    <a>{{ title }}</a>
+                </router-link>
+
                 <FormTransferToken
                     :mosaic-id="mosaicId"
                     :src="fileBlob"
