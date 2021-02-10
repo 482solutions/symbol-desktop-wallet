@@ -331,6 +331,7 @@ export default {
             // Upgrade
             dispatch('namespace/SIGNER_CHANGED', {}, { root: true });
             dispatch('mosaic/SIGNER_CHANGED', {}, { root: true });
+            dispatch('marketplace/SIGNER_CHANGED', {}, { root: true });
             dispatch('transaction/SIGNER_CHANGED', {}, { root: true });
             dispatch('metadata/SIGNER_CHANGED', {}, { root: true });
             dispatch('harvesting/SET_CURRENT_SIGNER_HARVESTING_MODEL', currentSignerAddress.plain(), { root: true });
