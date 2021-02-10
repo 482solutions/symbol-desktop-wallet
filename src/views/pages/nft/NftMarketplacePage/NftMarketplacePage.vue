@@ -6,6 +6,7 @@
             v-else-if="!isLoading"
             :key="index"
             :title="item.nftData.title"
+            :holder-address="item.nftData"
             :mosaic-id="item.hexId"
             :cid="item.nftData.CID"
             :price="item.price"
@@ -23,12 +24,9 @@ import FormMosaicDefinitionTransaction from '@/views/forms/FormMosaicDefinitionT
 import NFTCardCollection from '@/components/NFTCardDisplay/NFTCardCollection.vue';
 import { mapGetters } from 'vuex';
 import { MosaicModel } from '@/core/database/entities/MosaicModel';
-import { MosaicService } from '@/services/MosaicService';
-import { NetworkConfigurationModel } from '@/core/database/entities/NetworkConfigurationModel';
 import { MetadataModel } from '@/core/database/entities/MetadataModel';
 import { MosaicMarketplace } from '@/services/MarketplaceService';
 import NFTCardMarketplace from '@/components/NFTCardDisplay/NFTCardMarketplace.vue';
-import { TableAssetType } from '@/components/TableDisplay/TableAssetType';
 
 // @ts-ignore
 @Component({
