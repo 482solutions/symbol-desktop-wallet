@@ -45,7 +45,15 @@
         >
             <div class="token-details-modal">
                 <div class="modal-title">Transfer</div>
-                <FormTransferTransaction @on-confirmation-success="showTokenDetails = false" />
+                <a :href="'http://explorer.testnet.symboldev.network/mosaics/' + mosaicId" class="card-info-title" target="_blank">{{
+                    title
+                }}</a>
+                <FormTransferToken
+                    :mosaic-id="mosaicId"
+                    :src="fileBlob"
+                    :type="fileType"
+                    @on-confirmation-success="showTokenDetails = false"
+                />
             </div>
         </Modal>
     </div>
@@ -53,11 +61,11 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
-import FormTransferTransaction from '@/views/forms/FormTransferTransaction/FormTransferTransaction.vue';
+import FormTransferToken from '@/views/forms/FormTransferToken/FormTransferToken.vue';
 
 @Component({
     components: {
-        FormTransferTransaction,
+        FormTransferToken,
     },
 })
 export default class NFTCardCollection extends Vue {
@@ -68,10 +76,6 @@ export default class NFTCardCollection extends Vue {
     public fileType: string = '';
     public showTokenDetails: boolean = false;
 
-    // transferMosaic(mosaicId: string) {
-    //     alert('Mosaic to transfer: ' + mosaicId);
-    //     console.log(this);
-    // }
     sellMosaic(mosaicId: string) {
         alert('Mosaic to sell: ' + mosaicId);
     }
