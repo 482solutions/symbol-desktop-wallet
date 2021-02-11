@@ -3,7 +3,7 @@
         <template v-slot:label> {{ $t('fee') }}: </template>
         <template v-slot:inputs>
             <div class="row-75-25 inputs-container">
-                <MaxFeeSelector
+                <MaxFeeSelectorVertical
                     v-model="maxFee"
                     :calculated-recommended-fee="calculatedRecommendedFee"
                     :calculated-highest-fee="calculatedHighestFee"
@@ -24,10 +24,10 @@
 import { Component, Vue, Prop } from 'vue-property-decorator';
 
 // child components
-import MaxFeeSelector from '@/components/MaxFeeSelector/MaxFeeSelector.vue';
+import MaxFeeSelectorVertical from '@/components/MaxFeeSelector/MaxFeeSelectorVertical.vue';
 import FormRow from '@/components/FormRow/FormRow.vue';
 
-@Component({ components: { MaxFeeSelector, FormRow } })
+@Component({ components: { MaxFeeSelectorVertical, FormRow } })
 export default class MaxFeeAndSubmit extends Vue {
     /**
      * Max fee value, bound to parent v-model
