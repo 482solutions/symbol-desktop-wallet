@@ -1,5 +1,6 @@
 <template>
     <div class="FormTransferToken">
+        {{ mosaicId }}
         <FormWrapper>
             <ValidationObserver v-slot="{ handleSubmit }" ref="observer" slim>
                 <form onsubmit="event.preventDefault()">
@@ -35,7 +36,7 @@
                             </FormRow>
 
                             <!-- Submit button -->
-                            <MaxFeeAndSubmit
+                            <MaxFeeAndSubmitToken
                                 v-if="!isAggregate"
                                 v-model="formItems.maxFee"
                                 :hide-submit="hideSubmit"
@@ -44,6 +45,7 @@
                                 @input="onChangeMaxFee"
                                 @button-clicked="handleSubmit(onSubmit)"
                             />
+
                             <div v-else-if="!hideSave" class="ml-2" style="text-align: right;">
                                 <button
                                     type="submit"
@@ -67,7 +69,7 @@
                                 :src="src"
                                 :alt="title"
                                 :title="title"
-                                style="max-width: 315px;"
+                                style="max-width: 350px;"
                             />
                             <video
                                 v-else-if="type && type.indexOf('video') !== -1"

@@ -53,7 +53,7 @@ import RecipientInput from '@/components/RecipientInput/RecipientInput.vue';
 // @ts-ignore
 import SignerSelector from '@/components/SignerSelector/SignerSelector.vue';
 // @ts-ignore
-import MaxFeeAndSubmit from '@/components/MaxFeeAndSubmit/MaxFeeAndSubmit.vue';
+import MaxFeeAndSubmitToken from '@/components/MaxFeeAndSubmitToken/MaxFeeAndSubmitToken.vue';
 // @ts-ignore
 import ModalTransactionUriImport from '@/views/modals/ModalTransactionUriImport/ModalTransactionUriImport.vue';
 // @ts-ignore
@@ -81,7 +81,7 @@ import { NotificationType } from '@/core/utils/NotificationType';
         RecipientInput,
         SignerSelector,
         ValidationObserver,
-        MaxFeeAndSubmit,
+        MaxFeeAndSubmitToken,
         FormRow,
         ModalTransactionUriImport,
         TransactionUriDisplay,
@@ -157,7 +157,7 @@ export class FormTransferTransactionTs extends FormTransactionBase {
     })
     readonly src: string;
 
-    inputMosaicIdHex: string = '690E74928ED5226A';
+    inputMosaicIdHex: string = this.mosaicId;
     /// end-region component properties
 
     /**
@@ -267,7 +267,7 @@ export class FormTransferTransactionTs extends FormTransactionBase {
      */
     protected getTransactions(): TransferTransaction[] {
         // const mosaicsInfo = this.$store.getters['mosaic/mosaics'] as MosaicModel[];
-        const mosaicId = new MosaicId(this.inputMosaicIdHex);
+        const mosaicId = new MosaicId(this.mosaicId);
         return [
             TransferTransaction.create(
                 this.createDeadline(),
