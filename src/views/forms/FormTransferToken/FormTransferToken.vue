@@ -20,10 +20,10 @@
                             />
 
                             <!-- Transfer recipient input field -->
-                            <RecipientInput v-model="formItems.recipientRaw" style="margin-bottom: 0.5rem;" @input="onChangeRecipient" />
+                            <RecipientInput v-model="formItems.recipientRaw" @input="onChangeRecipient" />
 
                             <!-- Transfer message input field -->
-                            <MessageInput v-model="formItems.messagePlain" style="margin-bottom: 0.5rem;" @input="onChangeMessage" />
+                            <MessageInput v-model="formItems.messagePlain" @input="onChangeMessage" />
                             <FormRow v-if="!selectedSigner.multisig && !isAggregate && !isLedger">
                                 <template v-slot:inputs>
                                     <div class="inputs-container checkboxes">
