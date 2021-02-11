@@ -1,5 +1,5 @@
 <template>
-    <div class="transaction_modal">
+    <div class="buy_nft_modal">
         <Modal
             v-model="show"
             class-name="modal-transaction-cosignature"
