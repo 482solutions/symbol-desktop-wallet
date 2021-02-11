@@ -21,8 +21,8 @@
                 <button
                     class="button-style inverted-button fat-button"
                     style="cursor: pointer;"
-                    type="submit"
-                    @click="transferMosaic(mosaicId)"
+                    :disabled="false"
+                    @click="showTokenDetails = true"
                 >
                     Transfer
                 </button>
@@ -44,15 +44,38 @@
             :file-type="fileType"
             @close="showMosaicSellModal = false"
         />
+        <Modal
+            v-model="showTokenDetails"
+            class-name="vertical-center-modal"
+            :footer-hide="true"
+            :transfer="false"
+            @on-cancel="$emit('close-modal')"
+        >
+            <div class="token-details-modal">
+                <div class="modal-title">Transfer</div>
+                <router-link :to="'http://explorer.testnet.symboldev.network/mosaics/' + mosaicId" class="token-link" target="_blank">
+                    <a>{{ title }}</a>
+                </router-link>
+                <FormTransferToken
+                    :mosaic-id="mosaicId"
+                    :src="fileBlob"
+                    :type="fileType"
+                    @on-confirmation-success="showTokenDetails = false"
+                />
+            </div>
+        </Modal>
     </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import ModalNFTMosaicSell from '@/views/modals/ModalNFTMosaicSell/ModalNFTMosaicSell.vue';
+import FormTransferToken from '@/views/forms/FormTransferToken/FormTransferToken.vue';
+
 @Component({
     components: {
         ModalNFTMosaicSell,
+        FormTransferToken,
     },
 })
 export default class NFTCardCollection extends Vue {
@@ -62,10 +85,7 @@ export default class NFTCardCollection extends Vue {
     public showMosaicSellModal: boolean = false;
     public fileBlob: string = '';
     public fileType: string = '';
-    transferMosaic(mosaicId: string) {
-        alert('Mosaic to transfer: ' + mosaicId);
-        console.log(this);
-    }
+    public showTokenDetails: boolean = false;
     created() {
         this.getResource(`https://ipfs.io/ipfs/${this.cid}`);
     }

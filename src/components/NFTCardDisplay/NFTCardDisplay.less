@@ -15,6 +15,12 @@
  */
 
 @import '../../views/resources/css/variables.less';
+.token-link{
+    display: flex;
+    font-size: @bigFont;
+    border-radius: 5px;
+    margin-top: 1%;
+}
 
 .card-container {
     width: 293px;
@@ -67,4 +73,98 @@
     font-size: @normalFont;
     color: @purpleDark;
     font-family: @symbolFontSemiBold;
+}
+.modal-title {
+    font-size: @subtitleFont;
+    color: @purple;
+    font-weight: bolder;
+}
+.token-details-modal {
+    padding: 0.3rem 0.4rem;
+    overflow: hidden;
+
+    .modal-title {
+        font-size: @subtitleFont;
+        color: @purple;
+        font-weight: bolder;
+    }
+
+    .form-wrapper {
+        display: grid;
+    }
+
+    .token-preview {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+    }
+
+    /deep/.form-row-inner-container {
+        align-items: self-start;
+
+        .label-container {
+            .form-label-container {
+                .form-label {
+                    padding-left: 0;
+                }
+            }
+        }
+
+        .inputs-container {
+            height: auto;
+            position: relative;
+            padding-left: 0;
+            .form-row-inner-container-value-only {
+                display: flex;
+            }
+            .autocomplete-container {
+                .auto-complete-size {
+                    width: 100%;
+                    display: flex;
+                    align-items: center;
+                    div {
+                        width: 100%;
+                    }
+                }
+                .auto-complete-style {
+                    .ivu-input {
+                        height: initial;
+                    }
+                }
+            }
+            .select-container {
+                display: flex;
+                align-items: center;
+                .emphasis {
+                    width: 100%;
+                }
+                .button-style {
+                    background-color: @purpleLightest;
+                    background-image: none;
+                    &:hover {
+                        background-image: none;
+                    }
+                    &::before {
+                        background-image: none;
+                    }
+                }
+            }
+            .input-container {
+                height: 0.3rem;
+                background-color: #f3f4f8;
+
+                .input-style {
+                    background-color: #f3f4f8 !important;
+                }
+            }
+            .value-container {
+                .metadata-value-input {
+                    height: 1.9rem;
+                    background-color: #f3f4f8;
+                    border-radius: 0.05rem;
+                    padding: 0.16rem;
+                }
+            }
+        }
+    }
 }

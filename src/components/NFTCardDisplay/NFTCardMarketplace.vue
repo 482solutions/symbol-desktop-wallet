@@ -13,11 +13,28 @@
                     <div class="card-info-time">Expires in: {{ currentTime }}</div>
                     <div class="card-info-time">XYM: {{ price / Math.pow(10, 6) }}</div>
                 </div>
-                <button class="button-style inverted-button fat-button" style="cursor: pointer;" type="submit" @click="buyMosaic(mosaicId)">
+                <button
+                    class="button-style inverted-button fat-button"
+                    style="cursor: pointer;"
+                    type="submit"
+                    @click="showBuyNFTModal = true"
+                >
                     Buy
                 </button>
             </div>
         </div>
+        <ModalBuyNFT
+            v-if="showBuyNFTModal"
+            :image-link="'https://cloudflare-ipfs.com/ipfs/' + cid"
+            :mosaic-id="mosaicId"
+            :nft-info="formItems"
+            :title="title"
+            :visible="showBuyNFTModal"
+            :price="price / Math.pow(10, 6)"
+            :time="currentTime"
+            :type="1"
+            @close="showBuyNFTModal = false"
+        />
     </div>
 </template>
 
@@ -26,9 +43,15 @@ import { Component, Prop } from 'vue-property-decorator';
 import { Address, Mosaic, MosaicId, MosaicNonce, PlainMessage, Transaction, TransferTransaction, UInt64 } from 'symbol-sdk';
 import { MosaicModel } from '@/core/database/entities/MosaicModel';
 import { FormTransactionBase } from '@/views/forms/FormTransactionBase/FormTransactionBase';
+import ModalBuyNFT from '@/views/modals/ModalBuyNFT/ModalBuyNFT.vue';
 
 type timePeriodType = 6 | 12 | 24 | 48;
-@Component
+
+@Component({
+    components: {
+        ModalBuyNFT,
+    },
+})
 export default class NFTCardMarketplace extends FormTransactionBase {
     currentTime: string = null;
     @Prop({ required: true }) readonly title: string;
@@ -36,6 +59,7 @@ export default class NFTCardMarketplace extends FormTransactionBase {
     @Prop({ required: true }) readonly mosaicId: string;
     @Prop({ required: true }) readonly price: number;
     @Prop({ required: true }) readonly endDate: number;
+    showBuyNFTModal: boolean = false;
     nftInfo = NFTCardMarketplace.nftPrice(100, 0.05, 12);
     nftMosaicDivisibility = 0;
     networkMosaicDivisibility = 6;
@@ -52,9 +76,6 @@ export default class NFTCardMarketplace extends FormTransactionBase {
         nftFile: 'MacBook Pro 16',
     };
 
-    buyMosaic(mosaicId: string) {
-        alert('Mosaic to buy: ' + mosaicId);
-    }
 
     public async created() {
         this.currentTime = '00:00:00';
@@ -74,6 +95,7 @@ export default class NFTCardMarketplace extends FormTransactionBase {
         const mosaicId = MosaicId.createFromNonce(nonce, this.currentAccountAddress);
         return [this.createTransferServiceFeeTx(), this.buyerToSellerTx(), this.sellerToBuyerTx({ mosaicId: mosaicId.toHex() })];
     }
+
     protected resetForm() {
         console.log('resetForm');
     }
