@@ -1,7 +1,7 @@
 <template v-slot="{ handleSubmit }">
     <div class="card-container">
         <div class="card-container-image">
-            <Spin v-if="!fileBlob || !fileType" size="large" fix />
+            <Spin v-if="!fileBlob || !fileType" size="large" />
             <img v-if="fileType && fileType.indexOf('image') !== -1" :src="fileBlob" :alt="title" :title="title" class="card-image" />
             <video
                 v-else-if="fileType && fileType.indexOf('video') !== -1"
@@ -30,31 +30,41 @@
                     class="button-style inverted-button fat-button"
                     style="cursor: pointer;"
                     type="submit"
-                    @click="sellMosaic(mosaicId)"
+                    @click="showMosaicSellModal = true"
                 >
                     Sell
                 </button>
             </div>
         </div>
+        <ModalNFTMosaicSell
+            v-if="showMosaicSellModal"
+            :visible="showMosaicSellModal"
+            :mosaic-id="mosaicId"
+            :file-blob="fileBlob"
+            :file-type="fileType"
+            @close="showMosaicSellModal = false"
+        />
     </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
-
-@Component
+import ModalNFTMosaicSell from '@/views/modals/ModalNFTMosaicSell/ModalNFTMosaicSell.vue';
+@Component({
+    components: {
+        ModalNFTMosaicSell,
+    },
+})
 export default class NFTCardCollection extends Vue {
     @Prop({ required: true }) readonly title: string;
     @Prop({ required: true }) readonly cid: string;
     @Prop({ required: true }) readonly mosaicId: string;
+    public showMosaicSellModal: boolean = false;
     public fileBlob: string = '';
     public fileType: string = '';
     transferMosaic(mosaicId: string) {
         alert('Mosaic to transfer: ' + mosaicId);
         console.log(this);
-    }
-    sellMosaic(mosaicId: string) {
-        alert('Mosaic to sell: ' + mosaicId);
     }
     created() {
         this.getResource(`https://ipfs.io/ipfs/${this.cid}`);

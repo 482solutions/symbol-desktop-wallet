@@ -2,7 +2,7 @@
     <div>
         <div class="upper-section-container">
             <span class="add-mosaic-button">
-                <ButtonAdd title="Add NFT Mosaic" :disabled="false" @click="showMetadataModal = true" />
+                <ButtonAdd title="Add NFT Mosaic" :disabled="false" @click="showCreateMosaicModal = true" />
             </span>
         </div>
         <div style="display: flex; flex-wrap: wrap;">
@@ -16,7 +16,7 @@
                 :cid="item.nftData.CID"
             />
         </div>
-        <ModalNFTMosaicCreate v-if="showMetadataModal" :visible="showMetadataModal" :type="1" @close="showMetadataModal = false" />
+        <ModalNFTMosaicCreate v-if="showCreateMosaicModal" :visible="showCreateMosaicModal" @close="showCreateMosaicModal = false" />
     </div>
 </template>
 
@@ -62,7 +62,7 @@ export default class CollectionsPage extends Vue {
     private holdMosaics: MosaicModel[];
     private myCollection: MosaicModel[];
     private isFetchingMyCollection: boolean;
-    public showMetadataModal: boolean = false;
+    public showCreateMosaicModal: boolean = false;
     public get isLoading() {
         return this.isFetchingMyCollection;
     }

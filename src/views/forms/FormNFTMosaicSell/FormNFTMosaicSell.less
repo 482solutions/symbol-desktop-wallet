@@ -1,0 +1,168 @@
+@import '../../resources/css/variables.less';
+
+.upload-qrcode-container {
+  display: grid;
+
+  i {
+    color: @grayLight;
+    font-size: 1rem;
+  }
+
+  /deep/ .ivu-upload .ivu-upload-drag {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 3rem;
+  }
+
+  /deep/ .ivu-upload-drag:hover {
+    border: 0.01rem dashed @purpleLight;
+  }
+
+  .upload-qrcode-preview {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+    width: 3rem;
+    margin-bottom: 0.1rem;
+    color: @purple;
+
+    img {
+      width: 2rem;
+    }
+  }
+
+  .upload-qrcode-right-pane {
+    .upload-qrcode-explanation {
+      font-size: 0.2rem;
+      margin-top: 0.2rem;
+      margin-left: 0.2rem;
+    }
+
+    .upload-error {
+      color: @redDark;
+      font-size: 0.2rem;
+      margin-top: 0.2rem;
+      margin-left: 0.2rem;
+    }
+
+    .upload-qrcode-button {
+      margin-top: 0.4rem;
+      text-align: center;
+    }
+  }
+}
+
+.update-metadata-modal-conatiner {
+  padding: 0.3rem 0.4rem;
+  overflow: hidden;
+
+  .modal-title {
+    font-size: @subtitleFont;
+    color: @purple;
+    font-weight: bolder;
+  }
+
+  .form-wrapper {
+    display: grid;
+  }
+
+  /deep/ .form-row-inner-container {
+    align-items: self-start;
+
+    .label-container {
+      .form-label-container {
+        .form-label {
+          padding-left: 0;
+        }
+      }
+    }
+
+    .inputs-container {
+      height: auto;
+      position: relative;
+      padding-left: 0;
+
+      .form-row-inner-container-value-only {
+        display: flex;
+      }
+
+      .autocomplete-container {
+        .auto-complete-size {
+          width: 100%;
+          display: flex;
+          align-items: center;
+
+          div {
+            width: 100%;
+          }
+        }
+
+        .auto-complete-style {
+          .ivu-input {
+            height: initial;
+          }
+        }
+      }
+
+      .select-container {
+        display: flex;
+        align-items: center;
+
+        .emphasis {
+          width: 100%;
+        }
+
+        .button-style {
+          background-color: @purpleLightest;
+          background-image: none;
+
+          &:hover {
+            background-image: none;
+          }
+
+          &::before {
+            background-image: none;
+          }
+        }
+      }
+
+      .input-container {
+        height: 0.3rem;
+        background-color: #f3f4f8;
+
+        .input-style {
+          background-color: #f3f4f8 !important;
+        }
+      }
+
+      .value-container {
+        .metadata-value-input {
+          height: 1.9rem;
+          background-color: #f3f4f8;
+          border-radius: 0.05rem;
+          padding: 0.16rem;
+        }
+      }
+    }
+  }
+}
+
+.create-nft-mosaic-form {
+  display: flex;
+}
+
+.create-nft-mosaic-left {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.modal-nft-file {
+  width: 60%;
+
+  img, video {
+    width: 100%;
+  }
+}

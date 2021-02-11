@@ -1,5 +1,5 @@
 // configuration
-import { NFTConfig } from '@/config';
+import { MarketplaceConfig } from '@/config';
 import { MetadataType, MosaicId, MosaicInfo, RepositoryFactory } from 'symbol-sdk';
 import { from, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -12,7 +12,7 @@ import { MetadataModel } from '@/core/database/entities/MetadataModel';
  * @return {Promise<string>}
  */
 const request = async (): Promise<string> => {
-    const url = `${NFTConfig.marketplaceServer}tokens`;
+    const url = `${MarketplaceConfig.marketplaceServer}tokens`;
     return await fetch(url, {
         method: 'GET',
     }).then((response) => {
