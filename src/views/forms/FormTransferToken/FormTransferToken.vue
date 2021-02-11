@@ -1,6 +1,5 @@
 <template>
     <div class="FormTransferToken">
-        {{ mosaicId }}
         <FormWrapper>
             <ValidationObserver v-slot="{ handleSubmit }" ref="observer" slim>
                 <form onsubmit="event.preventDefault()">
