@@ -14,6 +14,7 @@
  *
  */
 export enum NotificationType {
+    NFT_MOSAIC_ADDED_TO_MARKETPLACE = 'NFT mosaic added to marketplace',
     PROFILE_NAME_EXISTS_ERROR = 'profile_name_already_exists',
     PROFILE_NAME_INPUT_ERROR = 'profile_name_error',
     ADDRESS_ALIAS_NOT_EXIST_ERROR = 'address_alias_not_exist',

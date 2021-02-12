@@ -4,12 +4,22 @@
             <div class="create-nft-mosaic-form">
                 <div class="token-preview">
                     <div class="card-info-title">{{ title }}</div>
-                    <img :src="imageLink" class="card-image" />
+                    <Spin v-if="!fileBlob || !fileType" size="large" />
+                    <img v-if="fileType && fileType.indexOf('image') !== -1" :src="fileBlob" class="card-image" />
+                    <video
+                        v-else-if="fileType && fileType.indexOf('video') !== -1"
+                        autoplay
+                        muted
+                        loop
+                        :src="fileBlob"
+                        class="card-image"
+                        :type="fileType"
+                    />
                 </div>
 
-                <div class="create-nft-mosaic-left">
-                    <div class="card-info-creator">Creator: {{ (nftInfo.rootNamespace + " " + nftInfo.subNamespace) }}</div>
-                    <div class="card-info-creator">Description: {{ nftInfo.nftFile }}</div>
+                <div class="create-nft-mosaic-left" style="padding-top: 20px;">
+                    <div class="card-info-time">Creator: {{ (nftInfo.rootNamespace + " " + nftInfo.subNamespace) }}</div>
+                    <div class="card-info-time">Description: {{ nftInfo.nftFile }}</div>
                     <div class="card-info-time">Expires in: {{ time }}</div>
                     <div class="card-info-time">Total supply: {{ 1 }}</div>
                     <div class="card-info-time">XYM: {{ price }}</div>

@@ -2,7 +2,7 @@
     <div>
         <div class="upper-section-container">
             <span class="add-mosaic-button">
-                <ButtonAdd title="Add NFT Mosaic" :disabled="false" @click="showMetadataModal = true" />
+                <ButtonAdd title="Add NFT Mosaic" :disabled="false" @click="showCreateMosaicModal = true" />
             </span>
         </div>
         <div style="display: flex; flex-wrap: wrap;">
@@ -14,9 +14,10 @@
                 :title="item.nftData.title"
                 :mosaic-id="item.hexId"
                 :cid="item.nftData.CID"
+                :on-marketplace="item.onMarketplace"
             />
         </div>
-        <ModalNFTMosaicCreate v-if="showMetadataModal" :visible="showMetadataModal" :type="1" @close="showMetadataModal = false" />
+        <ModalNFTMosaicCreate v-if="showCreateMosaicModal" :visible="showCreateMosaicModal" @close="showCreateMosaicModal = false" />
     </div>
 </template>
 
@@ -51,20 +52,15 @@ import ButtonAdd from '@/components/ButtonAdd/ButtonAdd.vue';
     },
 })
 export default class CollectionsPage extends Vue {
-    /**
-     * Current account owned mosaics
-     * @protected
-     * @type {MosaicModel[]}
-     */
-    private holdMosaics: MosaicModel[];
     private myCollection: MosaicModel[];
     private isFetchingMyCollection: boolean;
-    public showMetadataModal: boolean = false;
+    public showCreateMosaicModal: boolean = false;
     public get isLoading() {
         return this.isFetchingMyCollection;
     }
     created() {
         this.$store.dispatch('marketplace/LOAD_MY_COLLECTION');
+        this.$store.dispatch('marketplace/FETCH_TOKENS');
     }
     protected isJSONValid(jsonInString: string): boolean {
         try {

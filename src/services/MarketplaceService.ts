@@ -1,5 +1,5 @@
 // configuration
-import { NFTConfig } from '@/config';
+import { MarketplaceConfig } from '@/config';
 import { MetadataType, MosaicId, MosaicInfo, RepositoryFactory } from 'symbol-sdk';
 import { from, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -12,7 +12,7 @@ import { MetadataModel } from '@/core/database/entities/MetadataModel';
  * @return {Promise<string>}
  */
 const request = async (): Promise<string> => {
-    const url = `${NFTConfig.marketplaceServer}tokens`;
+    const url = `${MarketplaceConfig.marketplaceServer}tokens`;
     return await fetch(url, {
         method: 'GET',
     }).then((response) => {
@@ -22,6 +22,8 @@ const request = async (): Promise<string> => {
 interface MosaicAdditionalData {
     price: number;
     endDate: number;
+    holder: string;
+    hours: number;
 }
 /// end-region protected helpers
 export interface MosaicMarketplace extends MosaicInfo, MosaicAdditionalData {
@@ -45,8 +47,10 @@ export class MarketplaceService {
                 mosaicInfo.map((mosaic: MosaicMarketplace) => {
                     mosaic.metadataList = [];
                     const additionalData = this.getMosaicDataById(dataJson, mosaic.id.toHex());
-                    mosaic.price = additionalData.price || 100000000;
+                    mosaic.price = additionalData.price;
                     mosaic.endDate = additionalData.date;
+                    mosaic.holder = additionalData.holder;
+                    mosaic.hours = additionalData.hours;
                     repositoryFactory
                         .createMetadataRepository()
                         .search({ targetId: mosaic.id, metadataType: MetadataType.Mosaic })
@@ -65,9 +69,9 @@ export class MarketplaceService {
         return from([mosaicMarketplaceInfo]);
     }
     private getMosaicDataById(
-        data: { id: string; price: number; date: number }[],
+        data: { id: string; price: number; date: number; holder: string; hours: number }[],
         id: string,
-    ): { id: string; price: number; date: number } {
+    ): { id: string; price: number; date: number; holder: string; hours: number } {
         return data.find((o) => o.id === id);
     }
 }
