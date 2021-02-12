@@ -47,10 +47,12 @@ import { NamespaceModel } from '@/core/database/entities/NamespaceModel';
 import { MarketplaceConfig } from '@/config';
 import { Address } from 'symbol-sdk';
 import { NotificationType } from '@/core/utils/NotificationType';
+import AssetFormPageWrap from '@/views/pages/assets/AssetSellWrap/AssetSellWrap.vue';
 @Component({
     components: {
         ValidationObserver,
         ValidationProvider,
+        AssetFormPageWrap,
         ErrorTooltip,
         MaxFeeSelector,
         NamespaceSelector,

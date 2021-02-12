@@ -1,6 +1,9 @@
 <template>
     <div class="update-metadata-modal-conatiner">
-        <div class="modal-title">Sell NFT Mosaic</div>
+        <div class="modal-header">
+            <div class="modal-title">Sell NFT Mosaic</div>
+            <AssetFormPageWrap />
+        </div>
         <FormWrapper>
             <ValidationObserver v-slot="{ handleSubmit }" ref="observer" slim>
                 <form autocomplete="off" onsubmit="event.preventDefault()" class="create-nft-mosaic-form mt-3">
