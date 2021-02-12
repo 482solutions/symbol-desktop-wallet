@@ -21,7 +21,7 @@
                 <button
                     class="button-style inverted-button fat-button"
                     style="cursor: pointer;"
-                    :disabled="false"
+                    :disabled="onMarketplace"
                     @click="showTokenDetails = true"
                 >
                     Transfer
@@ -30,6 +30,7 @@
                     class="button-style inverted-button fat-button"
                     style="cursor: pointer;"
                     type="submit"
+                    :disabled="onMarketplace"
                     @click="showMosaicSellModal = true"
                 >
                     Sell
@@ -71,17 +72,29 @@
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import ModalNFTMosaicSell from '@/views/modals/ModalNFTMosaicSell/ModalNFTMosaicSell.vue';
 import FormTransferToken from '@/views/forms/FormTransferToken/FormTransferToken.vue';
+import { mapGetters } from 'vuex';
 
 @Component({
     components: {
         ModalNFTMosaicSell,
         FormTransferToken,
     },
+    computed: {
+        ...mapGetters({
+            holdMosaics: 'mosaic/holdMosaics',
+            isFetchingMyCollection: 'marketplace/isFetchingMyCollection',
+            myCollection: 'marketplace/myCollection',
+            marketplaceList: 'marketplace/allTokens',
+            isFetchingMarketplace: 'marketplace/isFetchingMarketplace',
+        }),
+    },
 })
 export default class NFTCardCollection extends Vue {
     @Prop({ required: true }) readonly title: string;
     @Prop({ required: true }) readonly cid: string;
     @Prop({ required: true }) readonly mosaicId: string;
+    public onMarketplace: boolean = false;
+    private marketplaceList;
     public showMosaicSellModal: boolean = false;
     public fileBlob: string = '';
     public fileType: string = '';
@@ -98,6 +111,13 @@ export default class NFTCardCollection extends Vue {
                 });
             })
             .catch(console.error);
+    }
+    checkNFTMosaicOnMarketPlace(id: string): boolean {
+        console.log(this.marketplaceList[0].id.toHex());
+        if (this.marketplaceList.find((x) => x.id.toHex() === id) == -1) {
+            return false;
+        }
+        return true;
     }
 }
 </script>

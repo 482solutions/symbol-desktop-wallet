@@ -45,6 +45,8 @@ import { Component, Prop } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { NamespaceModel } from '@/core/database/entities/NamespaceModel';
 import { MarketplaceConfig } from '@/config';
+import { Address } from 'symbol-sdk';
+import { NotificationType } from '@/core/utils/NotificationType';
 @Component({
     components: {
         ValidationObserver,
@@ -94,6 +96,7 @@ export class FormNFTMosaicSellTs extends FormTransactionBase {
      * @type {MosaicModel[]}
      */
     public ownedNamespaces: NamespaceModel[];
+    private currentAccountAddress: Address;
     public formItems = {
         maxFee: 0,
         price: 0,
@@ -162,8 +165,26 @@ export class FormNFTMosaicSellTs extends FormTransactionBase {
     public get hasFormAnyChanges(): boolean {
         return this.formItems.price > 0 || this.formItems.serviceFee > 0 || this.formItems.sellTime > 0;
     }
-
-    public sellMosaic() {
-        console.log(this.formItems);
+    private async addTokenToMarketRequest(data: { id: string; holder: string; date: number; price: number }): Promise<void> {
+        const url = `${MarketplaceConfig.marketplaceServer}tokens`;
+        const response = await fetch(url, {
+            method: 'POST',
+            body: JSON.stringify(data),
+        });
+        if (response.status === 201) {
+            this.$store.dispatch('notification/ADD_SUCCESS', NotificationType.NFT_MOSAIC_ADDED_TO_MARKETPLACE);
+        } else {
+            this.$store.dispatch('notification/ADD_WARNING', 'NFT Token has been already added to the marketplace.');
+        }
+        this.onConfirmationSuccess();
+    }
+    public async sellMosaic() {
+        const requestData = {
+            id: this.mosaicId,
+            holder: this.currentAccountAddress.plain(),
+            date: this.formItems.sellTime,
+            price: Number(this.formItems.price) * Math.pow(10, 6),
+        };
+        await this.addTokenToMarketRequest(requestData);
     }
 }

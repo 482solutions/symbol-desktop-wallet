@@ -12,7 +12,7 @@
                                     v-slot="{ errors }"
                                     vid="price"
                                     name="Price"
-                                    rules="required"
+                                    rules="required|min_value:10"
                                     tag="div"
                                     class="inputs-container"
                                 >
@@ -68,18 +68,6 @@
                             </template>
                         </FormRow>
                         <FormRow>
-                            <template v-slot:label> {{ $t('fee') }}: </template>
-                            <template v-slot:inputs>
-                                <MaxFeeSelector
-                                    v-model="formItems.maxFee"
-                                    calculated-recommended-fee="0"
-                                    calculated-highest-fee="0"
-                                    @on-change="calculateFee()"
-                                />
-                            </template>
-                        </FormRow>
-
-                        <FormRow>
                             <template v-slot:label>You'll Receive:</template>
                             <template v-slot:inputs>
                                 <input
@@ -92,10 +80,21 @@
                             </template>
                         </FormRow>
                         <FormRow>
+                            <template v-slot:label> {{ $t('fee') }}: </template>
+                            <template v-slot:inputs>
+                                <MaxFeeSelector
+                                    v-model="formItems.maxFee"
+                                    calculated-recommended-fee="0"
+                                    calculated-highest-fee="0"
+                                    @on-change="calculateFee()"
+                                />
+                            </template>
+                        </FormRow>
+                        <FormRow>
                             <template v-slot:inputs>
                                 <button
                                     class="button-style inverted-button fat-button"
-                                    style="cursor: pointer;"
+                                    style="cursor: pointer; margin-top: 2em;"
                                     :disabled="!hasFormAnyChanges"
                                     @click="handleSubmit(sellMosaic)"
                                 >
@@ -106,13 +105,7 @@
                     </div>
                     <div class="modal-nft-file">
                         <Spin v-if="!fileBlob || !fileType" size="large" />
-                        <img
-                            v-if="fileType && fileType.indexOf('image') !== -1"
-                            :src="fileBlob"
-                            :alt="title"
-                            :title="title"
-                            class="card-image"
-                        />
+                        <img v-if="fileType && fileType.indexOf('image') !== -1" :src="fileBlob" class="card-image" />
                         <video
                             v-else-if="fileType && fileType.indexOf('video') !== -1"
                             autoplay
@@ -126,14 +119,6 @@
                 </form>
             </ValidationObserver>
         </FormWrapper>
-        <ModalTransactionConfirmation
-            v-if="hasConfirmationModal"
-            :command="command"
-            :visible="hasConfirmationModal"
-            @success="onConfirmationSuccess"
-            @error="onConfirmationError"
-            @close="onConfirmationCancel"
-        />
     </div>
 </template>
 

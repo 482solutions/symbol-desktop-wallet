@@ -36,7 +36,12 @@ export class ModalBuyNFTts extends FormTransferTransactionTs {
     @Prop({
         required: true,
     })
-    imageLink: string;
+    fileType: string;
+
+    @Prop({
+        required: true,
+    })
+    fileBlob: string;
 
     @Prop({
         required: true,
