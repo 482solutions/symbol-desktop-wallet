@@ -26,7 +26,6 @@
 // external dependencies
 import { Component, Vue } from 'vue-property-decorator';
 // child components
-import AssetFormPageWrap from '@/views/pages/assets/AssetFormPageWrap/AssetFormPageWrap.vue';
 import FormMosaicDefinitionTransaction from '@/views/forms/FormMosaicDefinitionTransaction/FormMosaicDefinitionTransaction.vue';
 import ModalTransactionConfirmation from '@/views/modals/ModalTransactionConfirmation/ModalTransactionConfirmation.vue';
 import ModalNFTMosaicCreate from '@/views/modals/ModalNFTMosaicCreate/ModalNFTMosaicCreate.vue';
@@ -35,11 +34,9 @@ import { mapGetters } from 'vuex';
 import { MosaicModel } from '@/core/database/entities/MosaicModel';
 import { MetadataModel } from '@/core/database/entities/MetadataModel';
 import ButtonAdd from '@/components/ButtonAdd/ButtonAdd.vue';
-
 // @ts-ignore
 @Component({
     components: {
-        AssetFormPageWrap,
         FormMosaicDefinitionTransaction,
         NFTCardCollection,
         ModalTransactionConfirmation,
