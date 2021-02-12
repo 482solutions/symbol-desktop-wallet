@@ -1,6 +1,9 @@
 <template>
     <div class="update-metadata-modal-conatiner">
-        <div class="modal-title">Create NFT Mosaic</div>
+        <div class="modal-header">
+            <div class="modal-title">Create NFT Mosaic</div>
+            <AssetFormPageWrap />
+        </div>
         <FormWrapper>
             <ValidationObserver v-slot="{ handleSubmit }" ref="observer" slim>
                 <form autocomplete="off" onsubmit="event.preventDefault()" class="mt-3">
@@ -26,7 +29,7 @@
                                         v-slot="{ errors }"
                                         vid="nftTitle"
                                         name="NFT title"
-                                        rules="required"
+                                        rules="required|max:40"
                                         tag="div"
                                         class="inputs-container"
                                     >
@@ -48,7 +51,7 @@
                                         v-slot="{ errors }"
                                         vid="nftdescription"
                                         name="NFT description"
-                                        rules="required"
+                                        rules="required|max:100"
                                         tag="div"
                                         class="inputs-container"
                                     >
