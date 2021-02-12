@@ -1,7 +1,7 @@
 <template v-slot="{ handleSubmit }">
     <div class="card-container">
         <div class="card-container-image">
-            <Spin v-if="!fileBlob || !fileType" size="large" fix />
+            <Spin v-if="!fileBlob || !fileType" size="large" />
             <img v-if="fileType && fileType.indexOf('image') !== -1" :src="fileBlob" :alt="title" :title="title" class="card-image" />
             <video
                 v-else-if="fileType && fileType.indexOf('video') !== -1"
@@ -21,7 +21,7 @@
                 <button
                     class="button-style inverted-button fat-button"
                     style="cursor: pointer;"
-                    :disabled="false"
+                    :disabled="onMarketplace"
                     @click="showTokenDetails = true"
                 >
                     Transfer
@@ -30,12 +30,21 @@
                     class="button-style inverted-button fat-button"
                     style="cursor: pointer;"
                     type="submit"
-                    @click="sellMosaic(mosaicId)"
+                    :disabled="onMarketplace"
+                    @click="showMosaicSellModal = true"
                 >
                     Sell
                 </button>
             </div>
         </div>
+        <ModalNFTMosaicSell
+            v-if="showMosaicSellModal"
+            :visible="showMosaicSellModal"
+            :mosaic-id="mosaicId"
+            :file-blob="fileBlob"
+            :file-type="fileType"
+            @close="showMosaicSellModal = false"
+        />
         <Modal
             v-model="showTokenDetails"
             class-name="vertical-center-modal"
@@ -61,24 +70,35 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
+import ModalNFTMosaicSell from '@/views/modals/ModalNFTMosaicSell/ModalNFTMosaicSell.vue';
 import FormTransferToken from '@/views/forms/FormTransferToken/FormTransferToken.vue';
+import { mapGetters } from 'vuex';
 
 @Component({
     components: {
+        ModalNFTMosaicSell,
         FormTransferToken,
+    },
+    computed: {
+        ...mapGetters({
+            holdMosaics: 'mosaic/holdMosaics',
+            isFetchingMyCollection: 'marketplace/isFetchingMyCollection',
+            myCollection: 'marketplace/myCollection',
+            marketplaceList: 'marketplace/allTokens',
+            isFetchingMarketplace: 'marketplace/isFetchingMarketplace',
+        }),
     },
 })
 export default class NFTCardCollection extends Vue {
     @Prop({ required: true }) readonly title: string;
     @Prop({ required: true }) readonly cid: string;
     @Prop({ required: true }) readonly mosaicId: string;
+    public onMarketplace: boolean = false;
+    private marketplaceList;
+    public showMosaicSellModal: boolean = false;
     public fileBlob: string = '';
     public fileType: string = '';
     public showTokenDetails: boolean = false;
-
-    sellMosaic(mosaicId: string) {
-        alert('Mosaic to sell: ' + mosaicId);
-    }
     created() {
         this.getResource(`https://ipfs.io/ipfs/${this.cid}`);
     }
@@ -91,6 +111,13 @@ export default class NFTCardCollection extends Vue {
                 });
             })
             .catch(console.error);
+    }
+    checkNFTMosaicOnMarketPlace(id: string): boolean {
+        console.log(this.marketplaceList[0].id.toHex());
+        if (this.marketplaceList.find((x) => x.id.toHex() === id) == -1) {
+            return false;
+        }
+        return true;
     }
 }
 </script>

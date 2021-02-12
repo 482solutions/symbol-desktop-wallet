@@ -13,21 +13,25 @@
  * See the License for the specific language governing permissions and limitations under the License.
  *
  */
-import { Component, Prop } from 'vue-property-decorator';
 
-// child components
+// import external components
+import { Component, Prop, Vue } from 'vue-property-decorator';
+
 // @ts-ignore
-import TransactionDetails from '@/components/TransactionDetails/TransactionDetails.vue';
-import ModalTransactionConfirmation from '@/views/modals/ModalTransactionConfirmation/ModalTransactionConfirmation.vue';
-import { FormTransferTransactionTs } from './../../forms/FormTransferToken/FormTransferTokenTs';
+import FormNFTMosaicSell from '@/views/forms/FormNFTMosaicSell/FormNFTMosaicSell.vue';
+import { mapGetters } from 'vuex';
 
 @Component({
     components: {
-        TransactionDetails,
-        ModalTransactionConfirmation,
+        FormNFTMosaicSell,
+    },
+    computed: {
+        ...mapGetters({
+            ownedNamespaces: 'namespace/ownedNamespaces',
+        }),
     },
 })
-export class ModalBuyNFTts extends FormTransferTransactionTs {
+export class ModalNFTMosaicSellTs extends Vue {
     @Prop({
         default: false,
     })
@@ -36,56 +40,30 @@ export class ModalBuyNFTts extends FormTransferTransactionTs {
     @Prop({
         required: true,
     })
+    mosaicId: string;
+    @Prop({
+        required: true,
+    })
     fileType: string;
-
     @Prop({
         required: true,
     })
     fileBlob: string;
 
-    @Prop({
-        required: true,
-    })
-    mosaicId: string;
-
-    @Prop({
-        required: true,
-    })
-    nftInfo: string;
-
-    @Prop({
-        required: true,
-    })
-    price: string;
-
-    @Prop({
-        required: true,
-    })
-    time: string;
-
-    @Prop({
-        required: true,
-    })
-    title: string;
-
-    /// region computed properties
-
     /**
      * Visibility state
      * @type {boolean}
      */
-    public get show(): boolean {
+    get show(): boolean {
         return this.visible;
     }
 
     /**
      * Emits close event
      */
-    public set show(val) {
+    set show(val) {
         if (!val) {
             this.$emit('close');
         }
     }
-
-    /// end-region computed properties
 }

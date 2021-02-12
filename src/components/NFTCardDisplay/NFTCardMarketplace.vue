@@ -1,7 +1,17 @@
 <template v-slot="{ handleSubmit }">
     <div class="card-container card-marketplace">
         <div class="card-container-image">
-            <img :src="'https://cloudflare-ipfs.com/ipfs/' + cid" :alt="title" :title="title" class="card-image" />
+            <Spin v-if="!fileBlob || !fileType" size="large" />
+            <img v-if="fileType && fileType.indexOf('image') !== -1" :src="fileBlob" :alt="title" :title="title" class="card-image" />
+            <video
+                v-else-if="fileType && fileType.indexOf('video') !== -1"
+                autoplay
+                muted
+                loop
+                :src="fileBlob"
+                class="card-image"
+                :type="fileType"
+            />
         </div>
         <div class="card-container-info">
             <a :href="'http://explorer.testnet.symboldev.network/mosaics/' + mosaicId" class="card-info-title" target="_blank">{{
@@ -25,7 +35,8 @@
         </div>
         <ModalBuyNFT
             v-if="showBuyNFTModal"
-            :image-link="'https://cloudflare-ipfs.com/ipfs/' + cid"
+            :file-blob="fileBlob"
+            :file-type="fileType"
             :mosaic-id="mosaicId"
             :nft-info="formItems"
             :title="title"
@@ -60,6 +71,8 @@ export default class NFTCardMarketplace extends FormTransactionBase {
     @Prop({ required: true }) readonly price: number;
     @Prop({ required: true }) readonly endDate: number;
     showBuyNFTModal: boolean = false;
+    public fileBlob: string = '';
+    public fileType: string = '';
     nftInfo = NFTCardMarketplace.nftPrice(100, 0.05, 12);
     nftMosaicDivisibility = 0;
     networkMosaicDivisibility = 6;
@@ -75,12 +88,22 @@ export default class NFTCardMarketplace extends FormTransactionBase {
         title: 'Laptop',
         nftFile: 'MacBook Pro 16',
     };
-
+    getResource(url: string) {
+        fetch(url, { method: 'GET' })
+            .then((response: Response) => {
+                this.fileType = response.headers.get('content-type');
+                response.blob().then((blob) => {
+                    this.fileBlob = URL.createObjectURL(blob);
+                });
+            })
+            .catch(console.error);
+    }
 
     public async created() {
         this.currentTime = '00:00:00';
         setInterval(() => this.updateExpiresTime(), 1000);
         this.$store.dispatch('network/LOAD_TRANSACTION_FEES');
+        this.getResource(`https://ipfs.io/ipfs/${this.cid}`);
         this.resetForm();
     }
 

@@ -41,28 +41,6 @@
                                     </ValidationProvider>
                                 </template>
                             </FormRow>
-                            <FormRow>
-                                <template v-slot:label>NFT Description</template>
-                                <template v-slot:inputs>
-                                    <ValidationProvider
-                                        v-slot="{ errors }"
-                                        vid="nftdescription"
-                                        name="NFT description"
-                                        rules="required"
-                                        tag="div"
-                                        class="inputs-container"
-                                    >
-                                        <ErrorTooltip :errors="errors">
-                                            <input
-                                                v-model="formItems.description"
-                                                class="input-size input-style"
-                                                placeholder="Description of NFT Mosaic"
-                                                type="text"
-                                            />
-                                        </ErrorTooltip>
-                                    </ValidationProvider>
-                                </template>
-                            </FormRow>
                             <NamespaceSelector
                                 :value="formItems.rootNamespace"
                                 label="form_label_parent_namespace"
