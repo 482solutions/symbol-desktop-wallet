@@ -20,7 +20,18 @@ import { Component, Prop } from 'vue-property-decorator';
 import TransactionDetails from '@/components/TransactionDetails/TransactionDetails.vue';
 import ModalTransactionConfirmation from '@/views/modals/ModalTransactionConfirmation/ModalTransactionConfirmation.vue';
 import { FormTransactionBase } from '@/views/forms/FormTransactionBase/FormTransactionBase';
-import { Address, Mosaic, MosaicId, PlainMessage, PublicAccount, Transaction, TransferTransaction, UInt64 } from 'symbol-sdk';
+import {
+    Address,
+    Mosaic,
+    MosaicId,
+    MosaicInfo,
+    PlainMessage,
+    PublicAccount,
+    RepositoryFactory,
+    Transaction,
+    TransferTransaction,
+    UInt64,
+} from 'symbol-sdk';
 import { mapGetters } from 'vuex';
 import MaxFeeAndSubmit from '@/components/MaxFeeAndSubmit/MaxFeeAndSubmit.vue';
 import { TransactionCommand, TransactionCommandMode } from '@/services/TransactionCommand';
@@ -94,13 +105,21 @@ export class ModalBuyNFTts extends FormTransactionBase {
 
     maxFee: number = 1000000;
     serviceAddress: Address;
+    repositoryFactory: RepositoryFactory;
+    currentMosaic: MosaicInfo;
     currentAccountAddress: Address;
     sellerAccountAddress: Address;
     sellerPublicAccount: PublicAccount;
-    nftInfo: { total: number; fee: number; time: number; serviceFee: number; amountToSeller: number };
+    nftInfo: { total: number; fee: number; time: number; serviceFee: number; creatorFee: number; amountToSeller: number };
     networkMosaicDivisibility = 6;
     /// region computed properties
     public async created() {
+        this.repositoryFactory
+            .createMosaicRepository()
+            .getMosaic(new MosaicId(this.mosaicId))
+            .subscribe((t: MosaicInfo) => {
+                this.currentMosaic = t;
+            });
         this.$store.dispatch('network/LOAD_TRANSACTION_FEES');
         this.sellerAccountAddress = Address.createFromPublicKey(this.holderAddress, this.networkType);
         this.sellerPublicAccount = PublicAccount.createFromPublicKey(this.holderAddress, this.networkType);
@@ -156,9 +175,15 @@ export class ModalBuyNFTts extends FormTransactionBase {
     }
 
     protected getTransactions(): Transaction[] {
-        this.nftInfo = ModalBuyNFTts.nftPrice(Number(this.price), this.maxFee, this.hours);
+        const isCreator = this.currentMosaic.ownerAddress.plain() === this.sellerAccountAddress.plain();
+        console.log(isCreator);
+        this.nftInfo = ModalBuyNFTts.nftPrice(Number(this.price), this.maxFee, this.hours, isCreator);
         const mosaicId = new MosaicId(this.mosaicId);
-        return [this.createTransferServiceFeeTx(), this.buyerToSellerTx(), this.sellerToBuyerTx({ mosaicId })];
+        const transactionsArray = [this.createTransferServiceFeeTx(), this.buyerToSellerTx(), this.sellerToBuyerTx({ mosaicId })];
+        if (!isCreator) {
+            transactionsArray.push(this.buyerToCreatorTx({ creatorAddress: this.currentMosaic.ownerAddress }));
+        }
+        return transactionsArray;
     }
 
     protected resetForm() {
@@ -175,12 +200,25 @@ export class ModalBuyNFTts extends FormTransactionBase {
         return TransferTransaction.create(
             this.createDeadline(),
             this.serviceAddress,
-            [new Mosaic(this.networkMosaic, UInt64.fromUint(this.nftInfo.serviceFee * Math.pow(10, this.networkMosaicDivisibility)))],
+            [new Mosaic(this.networkMosaic, UInt64.fromUint(this.nftInfo.creatorFee * Math.pow(10, this.networkMosaicDivisibility)))],
             PlainMessage.create('Marketplace service fee'),
             this.networkType,
             maxFee,
         );
     }
+
+    private buyerToCreatorTx(tx: { creatorAddress: Address }): Transaction {
+        const maxFee = UInt64.fromUint(this.maxFee);
+        return TransferTransaction.create(
+            this.createDeadline(),
+            tx.creatorAddress,
+            [new Mosaic(this.networkMosaic, UInt64.fromUint(this.nftInfo.creatorFee * Math.pow(10, this.networkMosaicDivisibility)))],
+            PlainMessage.create(`send ${this.nftInfo.creatorFee} symbol.xym to creator`),
+            this.networkType,
+            maxFee,
+        );
+    }
+
     private buyerToSellerTx(): Transaction {
         const maxFee = UInt64.fromUint(this.maxFee);
         return TransferTransaction.create(
@@ -195,7 +233,6 @@ export class ModalBuyNFTts extends FormTransactionBase {
 
     private sellerToBuyerTx(tx: { mosaicId: MosaicId }): Transaction {
         const maxFee = UInt64.fromUint(this.maxFee);
-        console.log(`this.sellerPublicAccount:`, this.sellerPublicAccount);
         return TransferTransaction.create(
             this.createDeadline(),
             this.currentAccountAddress,
@@ -211,7 +248,8 @@ export class ModalBuyNFTts extends FormTransactionBase {
         price: number,
         fee: number,
         time: number,
-    ): { total: number; fee: number; time: number; serviceFee: number; amountToSeller: number } {
+        creator?: boolean,
+    ): { total: number; fee: number; time: number; serviceFee: number; creatorFee: number; amountToSeller: number } {
         const timeConstant = {
             6: 0,
             12: 2,
@@ -219,12 +257,14 @@ export class ModalBuyNFTts extends FormTransactionBase {
             48: 4,
         };
         const serviceFee = price * 0.025 + timeConstant[time] * (fee / Math.pow(10, 6));
+        const creatorFee = creator ? 0 : price * 0.05;
         return {
             total: price,
             fee: fee,
             time: time,
             serviceFee,
-            amountToSeller: price - serviceFee,
+            creatorFee,
+            amountToSeller: price - serviceFee - creatorFee,
         };
     }
 }

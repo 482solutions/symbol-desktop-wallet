@@ -46,6 +46,7 @@ import { mapGetters } from 'vuex';
 import { NamespaceModel } from '@/core/database/entities/NamespaceModel';
 import { MarketplaceConfig } from '@/config';
 import { NotificationType } from '@/core/utils/NotificationType';
+import { MosaicMarketplace } from '@/services/MarketplaceService';
 @Component({
     components: {
         ValidationObserver,
@@ -68,6 +69,7 @@ import { NotificationType } from '@/core/utils/NotificationType';
             repositoryFactory: 'network/repositoryFactory',
             metadataTransactions: 'metadata/transactions',
             serviceAddress: 'marketplace/serviceAddress',
+            myCollection: 'marketplace/myCollection',
         }),
     },
 })
@@ -88,6 +90,8 @@ export class FormNFTMosaicSellTs extends FormTransactionBase {
      * Repository factory for metadata transaction service
      */
     public validationRules = ValidationRuleset;
+    private myCollection: MosaicMarketplace[];
+    public currentMosaic: MosaicMarketplace;
     /**
      * Current account owned mosaics
      * @protected
@@ -108,7 +112,13 @@ export class FormNFTMosaicSellTs extends FormTransactionBase {
      * Uploaded file name
      */
     fileName = '';
+    public isOwner(): boolean {
+        // @ts-ignore
+        return this.currentMosaic.ownerRawPlain === this.currentAccount.address;
+    }
     public async created() {
+        // @ts-ignore
+        this.currentMosaic = this.myCollection.find((x) => x.mosaicIdHex === this.mosaicId);
         this.hoursList = MarketplaceConfig.hoursList.map((item: number) => ({
             label: FormNFTMosaicSellTs.getLabel(item),
             value: item,
@@ -133,7 +143,7 @@ export class FormNFTMosaicSellTs extends FormTransactionBase {
             this.formItems.price * 0.025 + timeFactor[this.formItems.sellTime] * (this.formItems.maxFee / Math.pow(10, 6));
     }
     private calculateCreatorFee() {
-        this.formItems.creatorFee = this.formItems.price * 0.05;
+        this.formItems.creatorFee = this.isOwner() ? 0 : this.formItems.price * 0.05;
     }
     private calculateTotalReceive() {
         this.formItems.totalReceive = this.formItems.price - this.formItems.creatorFee - this.formItems.serviceFee;
@@ -149,7 +159,7 @@ export class FormNFTMosaicSellTs extends FormTransactionBase {
         this.formItems.price = 0;
         this.formItems.serviceFee = 0;
         this.formItems.creatorFee = 0;
-        this.formItems.sellTime = 12;
+        this.formItems.sellTime = 6;
         // - maxFee must be absolute
         this.formItems.maxFee = this.defaultFee;
     }
