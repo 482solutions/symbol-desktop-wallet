@@ -45,7 +45,6 @@ import { Component, Prop } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { NamespaceModel } from '@/core/database/entities/NamespaceModel';
 import { MarketplaceConfig } from '@/config';
-import { Address } from 'symbol-sdk';
 import { NotificationType } from '@/core/utils/NotificationType';
 @Component({
     components: {
@@ -68,7 +67,6 @@ import { NotificationType } from '@/core/utils/NotificationType';
             ownedNamespaces: 'namespace/ownedNamespaces',
             repositoryFactory: 'network/repositoryFactory',
             metadataTransactions: 'metadata/transactions',
-            currentAccountAddress: 'account/currentAccountAddress',
             serviceAddress: 'marketplace/serviceAddress',
         }),
     },
@@ -96,7 +94,6 @@ export class FormNFTMosaicSellTs extends FormTransactionBase {
      * @type {MosaicModel[]}
      */
     public ownedNamespaces: NamespaceModel[];
-    private currentAccountAddress: Address;
     public formItems = {
         maxFee: 0,
         price: 0,
@@ -181,7 +178,7 @@ export class FormNFTMosaicSellTs extends FormTransactionBase {
     public async sellMosaic() {
         const requestData = {
             id: this.mosaicId,
-            holder: this.currentAccountAddress.plain(),
+            holder: this.currentAccount.publicKey,
             date: this.formItems.sellTime,
             price: Number(this.formItems.price) * Math.pow(10, 6),
         };
