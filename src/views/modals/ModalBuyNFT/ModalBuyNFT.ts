@@ -19,15 +19,43 @@ import { Component, Prop } from 'vue-property-decorator';
 // @ts-ignore
 import TransactionDetails from '@/components/TransactionDetails/TransactionDetails.vue';
 import ModalTransactionConfirmation from '@/views/modals/ModalTransactionConfirmation/ModalTransactionConfirmation.vue';
-import { FormTransferTransactionTs } from './../../forms/FormTransferToken/FormTransferTokenTs';
+import { FormTransactionBase } from '@/views/forms/FormTransactionBase/FormTransactionBase';
+import {
+    Address,
+    Mosaic,
+    MosaicId,
+    MosaicInfo,
+    PlainMessage,
+    PublicAccount,
+    RepositoryFactory,
+    Transaction,
+    TransferTransaction,
+    UInt64,
+} from 'symbol-sdk';
+import { mapGetters } from 'vuex';
+import MaxFeeAndSubmit from '@/components/MaxFeeAndSubmit/MaxFeeAndSubmit.vue';
+import { TransactionCommand, TransactionCommandMode } from '@/services/TransactionCommand';
+import { MarketplaceConfig } from '@/config';
 
 @Component({
+    computed: {
+        ...mapGetters({
+            knownAccounts: 'account/knownAccounts',
+            ownedMosaics: 'mosaic/ownedMosaics',
+            ownedNamespaces: 'namespace/ownedNamespaces',
+            repositoryFactory: 'network/repositoryFactory',
+            metadataTransactions: 'metadata/transactions',
+            currentAccountAddress: 'account/currentAccountAddress',
+            serviceAddress: 'marketplace/serviceAddress',
+        }),
+    },
     components: {
         TransactionDetails,
         ModalTransactionConfirmation,
+        MaxFeeAndSubmit,
     },
 })
-export class ModalBuyNFTts extends FormTransferTransactionTs {
+export class ModalBuyNFTts extends FormTransactionBase {
     @Prop({
         default: false,
     })
@@ -51,7 +79,7 @@ export class ModalBuyNFTts extends FormTransferTransactionTs {
     @Prop({
         required: true,
     })
-    nftInfo: string;
+    description: string;
 
     @Prop({
         required: true,
@@ -62,14 +90,41 @@ export class ModalBuyNFTts extends FormTransferTransactionTs {
         required: true,
     })
     time: string;
+    @Prop({
+        required: true,
+    })
+    hours: number;
 
     @Prop({
         required: true,
     })
     title: string;
 
-    /// region computed properties
+    @Prop({ required: true })
+    readonly holderAddress: string;
 
+    maxFee: number = 1000000;
+    serviceAddress: Address;
+    repositoryFactory: RepositoryFactory;
+    currentMosaic: MosaicInfo;
+    currentAccountAddress: Address;
+    sellerAccountAddress: Address;
+    sellerPublicAccount: PublicAccount;
+    nftInfo: { total: number; fee: number; time: number; serviceFee: number; creatorFee: number; amountToSeller: number };
+    networkMosaicDivisibility = 6;
+    /// region computed properties
+    public async created() {
+        this.repositoryFactory
+            .createMosaicRepository()
+            .getMosaic(new MosaicId(this.mosaicId))
+            .subscribe((t: MosaicInfo) => {
+                this.currentMosaic = t;
+            });
+        this.$store.dispatch('network/LOAD_TRANSACTION_FEES');
+        this.sellerAccountAddress = Address.createFromPublicKey(this.holderAddress, this.networkType);
+        this.sellerPublicAccount = PublicAccount.createFromPublicKey(this.holderAddress, this.networkType);
+        this.resetForm();
+    }
     /**
      * Visibility state
      * @type {boolean}
@@ -77,7 +132,6 @@ export class ModalBuyNFTts extends FormTransferTransactionTs {
     public get show(): boolean {
         return this.visible;
     }
-
     /**
      * Emits close event
      */
@@ -86,6 +140,131 @@ export class ModalBuyNFTts extends FormTransferTransactionTs {
             this.$emit('close');
         }
     }
+    public createTransactionCommand(): TransactionCommand {
+        const transactions = this.getTransactions();
+        const mode = TransactionCommandMode.MULTISIGN;
+        return new TransactionCommand(
+            mode,
+            this.selectedSigner,
+            this.currentSignerPublicKey,
+            transactions,
+            this.networkMosaic,
+            this.generationHash,
+            this.networkType,
+            this.epochAdjustment,
+            this.networkConfiguration,
+            this.transactionFees,
+            this.requiredCosignatures,
+        );
+    }
 
-    /// end-region computed properties
+    /**
+     * Hook called when the child component ModalTransactionConfirmation triggers
+     * the event 'success'
+     */
+    public onConfirmationSuccess() {
+        // if the form was in multisig, set the signer to be the main account
+        // this triggers resetForm in the @Watch('currentAccount') hook
+        if (this.isMultisigMode()) {
+            this.$store.dispatch('account/SET_CURRENT_ACCOUNT', this.currentAccount);
+        }
+        this.resetForm();
+        this.hasConfirmationModal = false;
+        this.$emit('on-confirmation-success');
+        this.removeTokenFromMarketRequest();
+    }
+
+    protected getTransactions(): Transaction[] {
+        const isCreator = this.currentMosaic.ownerAddress.plain() === this.sellerAccountAddress.plain();
+        console.log(isCreator);
+        this.nftInfo = ModalBuyNFTts.nftPrice(Number(this.price), this.maxFee, this.hours, isCreator);
+        const mosaicId = new MosaicId(this.mosaicId);
+        const transactionsArray = [this.createTransferServiceFeeTx(), this.buyerToSellerTx(), this.sellerToBuyerTx({ mosaicId })];
+        if (!isCreator) {
+            transactionsArray.push(this.buyerToCreatorTx({ creatorAddress: this.currentMosaic.ownerAddress }));
+        }
+        return transactionsArray;
+    }
+
+    protected resetForm() {
+        console.log('resetForm');
+    }
+    public async removeTokenFromMarketRequest(): Promise<void> {
+        const url = `${MarketplaceConfig.marketplaceServer}tokens/?id=${this.mosaicId}`;
+        await fetch(url, {
+            method: 'DELETE',
+        });
+    }
+    private createTransferServiceFeeTx(): Transaction {
+        const maxFee = UInt64.fromUint(this.maxFee);
+        return TransferTransaction.create(
+            this.createDeadline(),
+            this.serviceAddress,
+            [new Mosaic(this.networkMosaic, UInt64.fromUint(this.nftInfo.creatorFee * Math.pow(10, this.networkMosaicDivisibility)))],
+            PlainMessage.create('Marketplace service fee'),
+            this.networkType,
+            maxFee,
+        );
+    }
+
+    private buyerToCreatorTx(tx: { creatorAddress: Address }): Transaction {
+        const maxFee = UInt64.fromUint(this.maxFee);
+        return TransferTransaction.create(
+            this.createDeadline(),
+            tx.creatorAddress,
+            [new Mosaic(this.networkMosaic, UInt64.fromUint(this.nftInfo.creatorFee * Math.pow(10, this.networkMosaicDivisibility)))],
+            PlainMessage.create(`send ${this.nftInfo.creatorFee} symbol.xym to creator`),
+            this.networkType,
+            maxFee,
+        );
+    }
+
+    private buyerToSellerTx(): Transaction {
+        const maxFee = UInt64.fromUint(this.maxFee);
+        return TransferTransaction.create(
+            this.createDeadline(),
+            this.sellerAccountAddress,
+            [new Mosaic(this.networkMosaic, UInt64.fromUint(this.nftInfo.amountToSeller * Math.pow(10, this.networkMosaicDivisibility)))],
+            PlainMessage.create(`send ${this.nftInfo.amountToSeller} symbol.xym to seller`),
+            this.networkType,
+            maxFee,
+        );
+    }
+
+    private sellerToBuyerTx(tx: { mosaicId: MosaicId }): Transaction {
+        const maxFee = UInt64.fromUint(this.maxFee);
+        return TransferTransaction.create(
+            this.createDeadline(),
+            this.currentAccountAddress,
+            [new Mosaic(tx.mosaicId, UInt64.fromUint(1))],
+            PlainMessage.create('send 1 nft token to customer'),
+            this.networkType,
+            maxFee,
+            undefined,
+            this.sellerPublicAccount,
+        );
+    }
+    private static nftPrice(
+        price: number,
+        fee: number,
+        time: number,
+        creator?: boolean,
+    ): { total: number; fee: number; time: number; serviceFee: number; creatorFee: number; amountToSeller: number } {
+        const timeConstant = {
+            6: 0,
+            12: 2,
+            24: 3,
+            48: 4,
+        };
+        const serviceFee = price * 0.025 + timeConstant[time] * (fee / Math.pow(10, 6));
+        const creatorFee = creator ? 0 : price * 0.05;
+        return {
+            total: price,
+            fee: fee,
+            time: time,
+            serviceFee,
+            creatorFee,
+            amountToSeller: price - serviceFee - creatorFee,
+        };
+    }
 }

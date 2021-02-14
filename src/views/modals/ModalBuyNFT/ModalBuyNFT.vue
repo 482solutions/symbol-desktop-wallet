@@ -5,9 +5,9 @@
                 <div class="token-preview">
                     <div class="card-info-title">{{ title }}</div>
                     <Spin v-if="!fileBlob || !fileType" size="large" />
-                    <img v-if="fileType && fileType.indexOf('image') !== -1" :src="fileBlob" class="card-image" />
+                    <img v-if="fileBlob && fileType && fileType.indexOf('image') !== -1" :src="fileBlob" class="card-image" />
                     <video
-                        v-else-if="fileType && fileType.indexOf('video') !== -1"
+                        v-else-if="fileBlob && fileType && fileType.indexOf('video') !== -1"
                         autoplay
                         muted
                         loop
@@ -18,20 +18,14 @@
                 </div>
 
                 <div class="create-nft-mosaic-left" style="padding-top: 20px;">
-                    <div class="card-info-time">Creator: {{ (nftInfo.rootNamespace + " " + nftInfo.subNamespace) }}</div>
-                    <div class="card-info-time">Description: {{ nftInfo.nftFile }}</div>
+                    <!--                    <div class="card-info-time">Creator: {{ nftInfo.creator }}</div>-->
+                    <!--                    <div class="card-info-time">Seller: {{ nftInfo.seller }}</div>-->
+                    <div class="card-info-time">Description: {{ description }}</div>
                     <div class="card-info-time">Expires in: {{ time }}</div>
                     <div class="card-info-time">Total supply: {{ 1 }}</div>
                     <div class="card-info-time">XYM: {{ price }}</div>
 
-                    <button
-                        class="button-style inverted-button fat-button"
-                        style="cursor: pointer; width: 50%;"
-                        type="submit"
-                        @click="hasConfirmationModal = true"
-                    >
-                        Buy
-                    </button>
+                    <MaxFeeAndSubmit v-model="maxFee" submit-button-text="Buy now" @button-clicked="onSubmit" />
                 </div>
             </div>
 

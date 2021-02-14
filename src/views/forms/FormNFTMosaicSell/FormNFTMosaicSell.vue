@@ -40,7 +40,7 @@
                                 />
                             </template>
                         </FormRow>
-                        <FormRow>
+                        <FormRow v-if="!isOwner()">
                             <template v-slot:label>Creator Fee 5% (XYM)</template>
                             <template v-slot:inputs>
                                 <input
