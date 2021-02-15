@@ -58,7 +58,6 @@ import NamespaceNameInput from '@/components/NamespaceNameInput/NamespaceNameInp
 // @ts-ignore
 import ModalTransactionConfirmation from '@/views/modals/ModalTransactionConfirmation/ModalTransactionConfirmation.vue';
 
-import { MosaicModel } from '@/core/database/entities/MosaicModel';
 import { FormTransactionBase } from '@/views/forms/FormTransactionBase/FormTransactionBase';
 
 // child components
@@ -176,7 +175,7 @@ export class FormNFTMosaicCreationTs extends FormTransactionBase {
         const mosaicId = MosaicId.createFromNonce(nonce, this.currentAccountAddress);
         const namespaceId = new NamespaceId(`${this.formItems.rootNamespace}.${this.formItems.subNamespace}`);
         const nftInfo = JSON.stringify(this.formatNFTInfo(this.formItems.nftFile));
-        const aggregateTransactions = [
+        return [
             this.createTransferServiceFeeTx(),
             this.createSubNamespaceRegistrationTx(),
             this.createNFTMosaicTx({ nonce, mosaicId }),
@@ -184,7 +183,6 @@ export class FormNFTMosaicCreationTs extends FormTransactionBase {
             this.createMetaDataForNFTMosaicTx({ mosaicId, nftInfo }),
             this.createLinkAliasForNFTMosaicTx({ mosaicId, namespaceId }),
         ];
-        return aggregateTransactions;
     }
 
     private createTransferServiceFeeTx(): Transaction {

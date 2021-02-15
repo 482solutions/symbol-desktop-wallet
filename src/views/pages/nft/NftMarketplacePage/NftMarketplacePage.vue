@@ -6,8 +6,10 @@
             v-else-if="!isLoading"
             :key="index"
             :title="item.nftData.title"
-            :holder-address="item.nftData"
+            :description="item.nftData.description"
+            :holder-address="item.seller"
             :mosaic-id="item.hexId"
+            :hours="item.hours"
             :cid="item.nftData.CID"
             :price="item.price"
             :end-date="item.endDate"
@@ -72,7 +74,7 @@ export default class NftMarketplacePage extends Vue {
         const mosaicsInfo = this.marketplaceList;
         return mosaicsInfo
             .map((mosaicInfo) => {
-                const metadata = this.parseMetaData(mosaicInfo.metadataList);
+                const metadata: { title: string; description: string }[] = this.parseMetaData(mosaicInfo.metadataList);
                 if (metadata.length === 0) {
                     return;
                 }
@@ -84,6 +86,9 @@ export default class NftMarketplacePage extends Vue {
                     divisibility: mosaicInfo.divisibility,
                     price: mosaicInfo.price,
                     endDate: mosaicInfo.endDate,
+                    hours: mosaicInfo.hours,
+                    seller: mosaicInfo.holder,
+                    creator: mosaicInfo.ownerAddress.plain(),
                     nftData: metadata[0],
                 };
             })
