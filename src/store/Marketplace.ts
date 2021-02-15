@@ -85,20 +85,12 @@ export default {
             {
                 mosaics,
                 currentSignerAddress,
-                mosaicMetadataList,
             }: {
                 mosaics: MosaicModel[];
                 currentSignerAddress: Address;
-                networkCurrency: NetworkCurrencyModel;
-                mosaicMetadataList: MetadataModel[];
             },
         ) => {
-            const uniqueMosaics = mosaics.map((mosaic) => {
-                mosaic.metadataList = MetadataService.getMosaicMetadataByTargetId(mosaicMetadataList, mosaic.mosaicIdHex);
-                return mosaic;
-            });
-
-            const holdMosaics = uniqueMosaics
+            const holdMosaics = mosaics
                 .filter((m) => m.addressRawPlain === currentSignerAddress.plain())
                 .sort((m1, m2) => {
                     const owner1 = m1.ownerRawPlain === currentSignerAddress.plain();
@@ -153,8 +145,6 @@ export default {
         },
         LOAD_MY_COLLECTION({ commit, rootGetters }) {
             const repositoryFactory: RepositoryFactory = rootGetters['network/repositoryFactory'];
-            const networkCurrency: NetworkCurrencyModel = rootGetters['mosaic/networkCurrency'];
-            const mosaicMetadataList: MetadataModel[] = rootGetters['metadata/mosaicMetadataList'];
             const mosaics: MosaicModel[] = rootGetters['mosaic/holdMosaics'];
 
             commit('isFetchingMyCollection', true);
@@ -177,11 +167,10 @@ export default {
                         if (!currentSignerAddress) {
                             return;
                         }
+
                         commit('myCollection', {
                             mosaics: mosaics,
                             currentSignerAddress,
-                            networkCurrency,
-                            mosaicMetadataList,
                         });
                     })
                     .add(() => commit('isFetchingMyCollection', false));
