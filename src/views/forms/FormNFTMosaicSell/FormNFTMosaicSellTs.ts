@@ -46,11 +46,13 @@ import { mapGetters } from 'vuex';
 import { NamespaceModel } from '@/core/database/entities/NamespaceModel';
 import { MarketplaceConfig } from '@/config';
 import { NotificationType } from '@/core/utils/NotificationType';
+import AssetFormPageWrap from '@/views/pages/assets/AssetSellWrap/AssetSellWrap.vue';
 import { MosaicMarketplace } from '@/services/MarketplaceService';
 @Component({
     components: {
         ValidationObserver,
         ValidationProvider,
+        AssetFormPageWrap,
         ErrorTooltip,
         MaxFeeSelector,
         NamespaceSelector,

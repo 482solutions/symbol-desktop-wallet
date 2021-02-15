@@ -66,6 +66,7 @@ import { Component } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { NamespaceModel } from '@/core/database/entities/NamespaceModel';
 import { FilterHelpers } from '@/core/utils/FilterHelpers';
+// @ts-ignore
 import AssetFormPageWrap from '@/views/pages/assets/AssetFeeWrap/AssetFeeWrap.vue';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const ipfsClient = require('ipfs-http-client');

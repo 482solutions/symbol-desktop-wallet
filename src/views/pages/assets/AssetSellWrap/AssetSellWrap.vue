@@ -7,28 +7,39 @@
         <div class="container">
             <Modal v-model="hasHelpModal" :transfer="false" :title="$t('rules_describe')">
                 <div class="asset-description-sub-title">
-                    By Account
+                    Price
                 </div>
                 <div class="asset-description-text">
-                    The account from which the token will be created. Will own the token by default
-                </div>
-                <div class="asset-description-sub-title">
-                    NFT Title
-                </div>
-                <div class="asset-description-text">
-                    The name of your custom nft token. Can contain up to 40 characters
-                </div>
-                <div class="asset-description-sub-title">
-                    NFT Description
-                </div>
-                <div class="asset-description-text">
-                    Description of your token, can contain up to 100 characters
+                    Price for your token in marketplace
                 </div>
                 <div class="asset-description-sub-title">
                     Service Fee
                 </div>
                 <div class="asset-description-text">
-                    The commission for the maintenance of the token storage is calculated according to the formula 10 * Fee
+                    Service commission is calculated by the formula: (Price/100*2.5) + Time transaction Fee.
+                    <div>Time transaction Fee:</div>
+                    <div>6 hours - Free</div>
+                    <div>12 hours - 2*Fee</div>
+                    <div>24 hours - 3*Fee</div>
+                    <div>48 hours - 4*Fee</div>
+                </div>
+                <div class="asset-description-sub-title">
+                    Creator Fee
+                </div>
+                <div class="asset-description-text">
+                    First creator Fee - it's 5% from Price
+                </div>
+                <div class="asset-description-sub-title">
+                    Sell For
+                </div>
+                <div class="asset-description-text">
+                    Time for transaction
+                </div>
+                <div class="asset-description-sub-title">
+                    You'll Receive
+                </div>
+                <div class="asset-description-text">
+                    The amount you receive minus commissions
                 </div>
                 <div slot="footer" class="modal-footer"></div>
             </Modal>
@@ -37,10 +48,10 @@
 </template>
 
 <script lang="ts">
-import { AssetFeeWrapTs } from './AssetFeeWrapTs';
-export default class AssetFormPageWrap extends AssetFeeWrapTs {}
+import { AssetSellWrapTs } from './AssetSellWrapTs';
+export default class AssetFormPageWrap extends AssetSellWrapTs {}
 </script>
 
 <style lang="less" scoped>
-@import './AssetFeeWrap.less';
+@import './AssetSellWrap.less';
 </style>
