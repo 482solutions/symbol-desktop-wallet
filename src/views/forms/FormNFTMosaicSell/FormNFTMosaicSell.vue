@@ -32,7 +32,23 @@
                             </template>
                         </FormRow>
                         <FormRow>
-                            <template v-slot:label>Service Fee(XYM)</template>
+                            <template v-slot:label>
+                                <Tooltip placement="top">
+                                    <div slot="content">
+                                        <p>
+                                            Service commission is <br />
+                                            calculated by the formula: <br />
+                                            <b>Price * 25% + Time Fee.</b>
+                                        </p>
+                                        <p><b>Time transaction Fee:</b></p>
+                                        <p>6 hours - Free</p>
+                                        <p>12 hours - 2*Fee</p>
+                                        <p>24 hours - 3*Fee</p>
+                                        <p>48 hours - 4*Fee</p>
+                                    </div>
+                                    <div>Service Fee(XYM)</div>
+                                </Tooltip>
+                            </template>
                             <template v-slot:inputs>
                                 <input
                                     v-model="formItems.serviceFee"
