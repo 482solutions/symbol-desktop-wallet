@@ -126,7 +126,7 @@ export class FormNFTMosaicCreationTs extends FormTransactionBase {
     /**
      * Uploaded file name
      */
-    fileName = '';
+    fileData: { name: string; type: string; blob: string } = { name: '', type: '', blob: '' };
 
     protected get fertileNamespaces(): NamespaceModel[] {
         const maxNamespaceDepth = this.networkConfiguration.maxNamespaceDepth;
@@ -151,14 +151,14 @@ export class FormNFTMosaicCreationTs extends FormTransactionBase {
         this.formItems.subNamespace = '';
         this.formItems.description = '';
         this.formItems.nftFile = '';
-        this.fileName = '';
+        this.fileData = { name: '', type: '', blob: '' };
 
         // - maxFee must be absolute
         this.formItems.maxFee = this.defaultFee;
     }
     protected async onBeforeUpload(file): Promise<void> {
         const ipfsHash = await ipfs.add(file);
-        this.fileName = file.name;
+        this.fileData = { name: file.name, blob: URL.createObjectURL(file), type: file.type };
         this.formItems.nftFile = ipfsHash.path;
     }
     protected formatNFTInfo(CID: string): { title: string; CID: string; description: string } {
@@ -299,7 +299,7 @@ export class FormNFTMosaicCreationTs extends FormTransactionBase {
             this.formItems.rootNamespace.length > 0 ||
             this.formItems.subNamespace.length > 0 ||
             this.formItems.nftFile.length > 0 ||
-            this.fileName.length > 0 ||
+            this.fileData.name.length > 0 ||
             this.formItems.description.length > 0
         );
     }

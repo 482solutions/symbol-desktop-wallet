@@ -113,7 +113,6 @@ export default class NFTCardCollection extends Vue {
             .catch(console.error);
     }
     checkNFTMosaicOnMarketPlace(id: string): boolean {
-        console.log(this.marketplaceList[0].id.toHex());
         if (this.marketplaceList.find((x) => x.id.toHex() === id) == -1) {
             return false;
         }

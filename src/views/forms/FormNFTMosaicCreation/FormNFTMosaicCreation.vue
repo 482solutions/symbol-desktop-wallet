@@ -53,7 +53,6 @@
                                         <ErrorTooltip :errors="errors">
                                             <input
                                                 v-model="formItems.subNamespace"
-                                                v-focus
                                                 class="input-size input-style"
                                                 placeholder="Title of NFT Mosaic"
                                                 type="text"
@@ -88,29 +87,49 @@
                         <div class="upload-qrcode-container">
                             <div class="upload-qrcode-left-pane">
                                 <Upload
-                                    v-model="fileName"
+                                    v-model="fileData"
                                     :multiple="false"
                                     action="no action"
                                     type="drag"
                                     accept=".jpg,.jpeg,.png,.gif,.svg,.mp4,.mpeg4"
                                     :before-upload="onBeforeUpload"
-                                    :max-size="20000"
+                                    :max-size="20480"
                                 >
                                     <div>
-                                        <div v-if="fileName" class="upload-qrcode-preview">
+                                        <div v-if="fileData.blob" class="upload-qrcode-preview">
                                             <div>
-                                                <span>{{ fileName }}</span>
+                                                <span>{{ fileData.name }}</span>
+                                            </div>
+                                            <div class="card-container-image">
+                                                <img
+                                                    v-if="fileData.type && fileData.type.indexOf('image') !== -1"
+                                                    :src="fileData.blob"
+                                                    :alt="fileData.name"
+                                                    :title="fileData.name"
+                                                    class="card-image"
+                                                />
+                                                <video
+                                                    v-else-if="fileData.type && fileData.type.indexOf('video') !== -1"
+                                                    autoplay
+                                                    muted
+                                                    loop
+                                                    :src="fileData.blob"
+                                                    class="card-image"
+                                                    :type="fileData.type"
+                                                />
                                             </div>
                                         </div>
 
-                                        <Icon v-if="!fileName" type="ios-cloud-upload"></Icon>
-                                        <p>
-                                            Drag and Drop file to upload on a service.
-                                        </p>
-                                        <p>
-                                            This file will be uploaded to the network and connected to your token. Available formats: .jpg,
-                                            .png, .svg, .gif, .mp4, .mpeg4. Maximum size: 20MB.
-                                        </p>
+                                        <div v-if="!fileData.blob" style="width: 2.5rem;">
+                                            <Icon type="ios-cloud-upload"></Icon>
+                                            <p>
+                                                Drag and Drop file to upload on a service.
+                                            </p>
+                                            <p>
+                                                This file will be uploaded to the network and connected to your token. Available formats:
+                                                .jpg, .png, .svg, .gif, .mp4, .mpeg4. Maximum size: 20MB.
+                                            </p>
+                                        </div>
                                     </div>
                                 </Upload>
                             </div>
