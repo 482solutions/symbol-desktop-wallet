@@ -25,7 +25,6 @@ import AssetFormPageWrap from '@/views/pages/assets/AssetFormPageWrap/AssetFormP
 import FormMosaicDefinitionTransaction from '@/views/forms/FormMosaicDefinitionTransaction/FormMosaicDefinitionTransaction.vue';
 import NFTCardCollection from '@/components/NFTCardDisplay/NFTCardCollection.vue';
 import { mapGetters } from 'vuex';
-import { MosaicModel } from '@/core/database/entities/MosaicModel';
 import { MetadataModel } from '@/core/database/entities/MetadataModel';
 import { MosaicMarketplace } from '@/services/MarketplaceService';
 import NFTCardMarketplace from '@/components/NFTCardDisplay/NFTCardMarketplace.vue';

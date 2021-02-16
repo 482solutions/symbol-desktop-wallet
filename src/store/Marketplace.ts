@@ -17,12 +17,12 @@ import Vue from 'vue';
 // internal dependencies
 import { AwaitLock } from './AwaitLock';
 import { MarketplaceService, MosaicMarketplace } from '@/services/MarketplaceService';
-import { Address, Metadata, MetadataEntry, MetadataType, MosaicId, Page, RepositoryFactory } from 'symbol-sdk';
+import { Address, Metadata, MetadataType, MosaicId, Page, RepositoryFactory } from 'symbol-sdk';
 import { MetadataModel } from '@/core/database/entities/MetadataModel';
-import { filter } from 'rxjs/operators';
 import { MosaicModel } from '@/core/database/entities/MosaicModel';
 import { combineLatest, Observable } from 'rxjs';
 import { MetadataService } from '@/services/MetadataService';
+import { MarketplaceConfig } from '@/config';
 
 const Lock = AwaitLock.create();
 
@@ -48,7 +48,7 @@ const marketplaceState: MarketplaceState = {
     mosaics: [],
     isFetchingMarketplace: false,
     isFetchingMyCollection: false,
-    serviceAddress: Address.createFromRawAddress('TBQRYGBRTOIIOVQQQENMCTL2RLW2DV3UPQ3RG3I'),
+    serviceAddress: Address.createFromRawAddress(MarketplaceConfig.serviceAccountAddress),
     myCollection: [],
     createMosaicForm: {
         rootNamespace: '',

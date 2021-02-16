@@ -68,9 +68,10 @@ import { NamespaceModel } from '@/core/database/entities/NamespaceModel';
 import { FilterHelpers } from '@/core/utils/FilterHelpers';
 // @ts-ignore
 import AssetFormPageWrap from '@/views/pages/assets/AssetFeeWrap/AssetFeeWrap.vue';
+import { MarketplaceConfig } from '@/config';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const ipfsClient = require('ipfs-http-client');
-const ipfs = ipfsClient('https://ipfs.infura.io:5001');
+const ipfs = ipfsClient(MarketplaceConfig.ipfsNode);
 @Component({
     components: {
         AssetFormPageWrap,
