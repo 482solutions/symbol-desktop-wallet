@@ -22,20 +22,31 @@
                                     </div>
                                 </template>
                             </FormRow>
+                            <NamespaceSelector
+                                :value="formItems.rootNamespace"
+                                label="Root namespace"
+                                :namespaces="fertileNamespaces"
+                                :parent-namespace="true"
+                                @input="setParentNamespaceName"
+                            />
                             <FormRow>
-                                <template v-slot:label>NFT Title</template>
+                                <template v-slot:label> NFT Title: </template>
                                 <template v-slot:inputs>
                                     <ValidationProvider
                                         v-slot="{ errors }"
-                                        vid="nftTitle"
-                                        name="NFT title"
-                                        rules="required|max:40"
+                                        vid="form_label_child_namespace_name"
+                                        :name="$t('form_label_namespace_name')"
+                                        :rules="{
+                                            required: true,
+                                            regex: '^[a-z0-9]{1}[a-z0-9-_]{0,40}$',
+                                        }"
                                         tag="div"
                                         class="inputs-container"
                                     >
                                         <ErrorTooltip :errors="errors">
                                             <input
-                                                v-model="formItems.title"
+                                                v-model="formItems.subNamespace"
+                                                v-focus
                                                 class="input-size input-style"
                                                 placeholder="Title of NFT Mosaic"
                                                 type="text"
@@ -45,11 +56,11 @@
                                 </template>
                             </FormRow>
                             <FormRow>
-                                <template v-slot:label>NFT Description</template>
+                                <template v-slot:label>NFT Description: </template>
                                 <template v-slot:inputs>
                                     <ValidationProvider
                                         v-slot="{ errors }"
-                                        vid="nftdescription"
+                                        vid="description"
                                         name="NFT description"
                                         rules="required|max:100"
                                         tag="div"
@@ -66,19 +77,6 @@
                                     </ValidationProvider>
                                 </template>
                             </FormRow>
-                            <NamespaceSelector
-                                :value="formItems.rootNamespace"
-                                label="form_label_parent_namespace"
-                                :namespaces="fertileNamespaces"
-                                :parent-namespace="true"
-                                @input="setParentNamespaceName"
-                            />
-                            <NamespaceNameInput
-                                v-model="formItems.subNamespace"
-                                :is-need-auto-focus="false"
-                                :namespace-registration-type="formItems.registrationType"
-                                @input="stripTagsNamespaceName"
-                            />
                         </div>
                         <div class="upload-qrcode-container">
                             <div class="upload-qrcode-left-pane">

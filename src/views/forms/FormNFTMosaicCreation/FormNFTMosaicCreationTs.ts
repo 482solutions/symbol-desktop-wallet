@@ -118,7 +118,6 @@ export class FormNFTMosaicCreationTs extends FormTransactionBase {
         rootNamespace: '',
         subNamespace: '',
         registrationType: NamespaceRegistrationType.SubNamespace,
-        title: '',
         description: '',
         nftFile: '',
     };
@@ -150,7 +149,6 @@ export class FormNFTMosaicCreationTs extends FormTransactionBase {
 
         this.formItems.rootNamespace = '';
         this.formItems.subNamespace = '';
-        this.formItems.title = '';
         this.formItems.description = '';
         this.formItems.nftFile = '';
         this.fileName = '';
@@ -165,7 +163,7 @@ export class FormNFTMosaicCreationTs extends FormTransactionBase {
     }
     protected formatNFTInfo(CID: string): { title: string; CID: string; description: string } {
         return {
-            title: this.formItems.title,
+            title: `${this.formItems.rootNamespace}.${this.formItems.subNamespace}`,
             description: this.formItems.description,
             CID,
         };
@@ -282,7 +280,7 @@ export class FormNFTMosaicCreationTs extends FormTransactionBase {
         } = {
             rootNamespace: this.formItems.rootNamespace,
             subNamespace: this.formItems.subNamespace,
-            title: this.formItems.title,
+            title: `${this.formItems.rootNamespace}.${this.formItems.subNamespace}`,
             nftFile: this.formItems.nftFile,
             maxFee: this.formItems.maxFee,
         };
@@ -302,7 +300,6 @@ export class FormNFTMosaicCreationTs extends FormTransactionBase {
             this.formItems.subNamespace.length > 0 ||
             this.formItems.nftFile.length > 0 ||
             this.fileName.length > 0 ||
-            this.formItems.title.length > 0 ||
             this.formItems.description.length > 0
         );
     }
