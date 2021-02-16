@@ -29,6 +29,13 @@
                                 :root-namespace="true"
                                 @input="setParentNamespaceName"
                             />
+                            <span
+                                style="color: #44004e; cursor: pointer;"
+                                @click="$router.push({ name: 'namespaces.createRootNamespace' })"
+                            >
+                                Create root namespace
+                            </span>
+
                             <FormRow>
                                 <template v-slot:label> NFT Title: </template>
                                 <template v-slot:inputs>
