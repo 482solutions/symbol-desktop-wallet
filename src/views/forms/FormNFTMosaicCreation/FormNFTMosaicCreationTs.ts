@@ -53,10 +53,11 @@ import SignerSelector from '@/components/SignerSelector/SignerSelector.vue';
 // @ts-ignore
 import { ValidationRuleset } from '@/core/validation/ValidationRuleset';
 
-import NamespaceNameInput from '@/components/NamespaceNameInput/NamespaceNameInput.vue';
+// @ts-ignore
+import NamespaceNameInput from '@/components/NamespaceNameInput/NamespaceNameInput';
 
 // @ts-ignore
-import ModalTransactionConfirmation from '@/views/modals/ModalTransactionConfirmation/ModalTransactionConfirmation.vue';
+import ModalTransactionConfirmation from '@/views/modals/ModalTransactionConfirmation/ModalTransactionConfirmation';
 
 import { FormTransactionBase } from '@/views/forms/FormTransactionBase/FormTransactionBase';
 

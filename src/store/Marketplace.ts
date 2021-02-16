@@ -144,6 +144,9 @@ export default {
             const marketplace = await marketplaceService.getAllTokens(repositoryFactory);
             marketplace.subscribe((mosaics: MosaicMarketplace[]) => {
                 setTimeout(() => {
+                    mosaics.sort((m1, m2) => {
+                        return m1.endDate - m2.endDate;
+                    });
                     commit('addTokens', mosaics);
                     commit('isFetchingMarketplace', false);
                 }, 1000);

@@ -17,8 +17,9 @@ import { Component, Prop } from 'vue-property-decorator';
 
 // child components
 // @ts-ignore
-import TransactionDetails from '@/components/TransactionDetails/TransactionDetails.vue';
-import ModalTransactionConfirmation from '@/views/modals/ModalTransactionConfirmation/ModalTransactionConfirmation.vue';
+import TransactionDetails from '@/components/TransactionDetails/TransactionDetails';
+// @ts-ignore
+import ModalTransactionConfirmation from '@/views/modals/ModalTransactionConfirmation/ModalTransactionConfirmation';
 import { FormTransactionBase } from '@/views/forms/FormTransactionBase/FormTransactionBase';
 import {
     Address,
@@ -33,7 +34,8 @@ import {
     UInt64,
 } from 'symbol-sdk';
 import { mapGetters } from 'vuex';
-import MaxFeeAndSubmit from '@/components/MaxFeeAndSubmit/MaxFeeAndSubmit.vue';
+// @ts-ignore
+import MaxFeeAndSubmit from '@/components/MaxFeeAndSubmit/MaxFeeAndSubmit';
 import { TransactionCommand, TransactionCommandMode } from '@/services/TransactionCommand';
 import { MarketplaceConfig } from '@/config';
 

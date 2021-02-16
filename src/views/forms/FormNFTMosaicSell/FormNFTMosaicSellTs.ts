@@ -30,7 +30,8 @@ import SignerSelector from '@/components/SignerSelector/SignerSelector.vue';
 // @ts-ignore
 import { ValidationRuleset } from '@/core/validation/ValidationRuleset';
 
-import NamespaceNameInput from '@/components/NamespaceNameInput/NamespaceNameInput.vue';
+// @ts-ignore
+import NamespaceNameInput from '@/components/NamespaceNameInput/NamespaceNameInput';
 
 // @ts-ignore
 import ModalTransactionConfirmation from '@/views/modals/ModalTransactionConfirmation/ModalTransactionConfirmation.vue';
@@ -44,7 +45,8 @@ import { mapGetters } from 'vuex';
 import { NamespaceModel } from '@/core/database/entities/NamespaceModel';
 import { MarketplaceConfig } from '@/config';
 import { NotificationType } from '@/core/utils/NotificationType';
-import AssetFormPageWrap from '@/views/pages/assets/AssetSellWrap/AssetSellWrap.vue';
+// @ts-ignore
+import AssetFormPageWrap from '@/views/pages/assets/AssetSellWrap/AssetSellWrap';
 import { MosaicMarketplace } from '@/services/MarketplaceService';
 @Component({
     components: {
