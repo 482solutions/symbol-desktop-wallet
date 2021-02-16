@@ -17,11 +17,11 @@ import Vue from 'vue';
 // internal dependencies
 import { AwaitLock } from './AwaitLock';
 import { MarketplaceService, MosaicMarketplace } from '@/services/MarketplaceService';
-import { Address, MetadataType, MosaicId, RepositoryFactory } from 'symbol-sdk';
+import { Address, Metadata, MetadataEntry, MetadataType, MosaicId, Page, RepositoryFactory } from 'symbol-sdk';
 import { MetadataModel } from '@/core/database/entities/MetadataModel';
-import { NetworkCurrencyModel } from '@/core/database/entities/NetworkCurrencyModel';
-import { map } from 'rxjs/operators';
+import { filter } from 'rxjs/operators';
 import { MosaicModel } from '@/core/database/entities/MosaicModel';
+import { combineLatest, Observable } from 'rxjs';
 import { MetadataService } from '@/services/MetadataService';
 
 const Lock = AwaitLock.create();
@@ -89,7 +89,6 @@ export default {
             }: {
                 mosaics: MosaicModel[];
                 currentSignerAddress: Address;
-                networkCurrency: NetworkCurrencyModel;
                 mosaicMetadataList: MetadataModel[];
             },
         ) => {
@@ -97,7 +96,6 @@ export default {
                 mosaic.metadataList = MetadataService.getMosaicMetadataByTargetId(mosaicMetadataList, mosaic.mosaicIdHex);
                 return mosaic;
             });
-
             const holdMosaics = uniqueMosaics
                 .filter((m) => m.addressRawPlain === currentSignerAddress.plain())
                 .sort((m1, m2) => {
@@ -153,39 +151,33 @@ export default {
         },
         LOAD_MY_COLLECTION({ commit, rootGetters }) {
             const repositoryFactory: RepositoryFactory = rootGetters['network/repositoryFactory'];
-            const networkCurrency: NetworkCurrencyModel = rootGetters['mosaic/networkCurrency'];
-            const mosaicMetadataList: MetadataModel[] = rootGetters['metadata/mosaicMetadataList'];
             const mosaics: MosaicModel[] = rootGetters['mosaic/holdMosaics'];
 
             commit('isFetchingMyCollection', true);
-
+            const observables: Observable<Page<Metadata>>[] = [];
             mosaics.map((mosaic: MosaicModel) => {
-                repositoryFactory
-                    .createMetadataRepository()
-                    .search({
+                observables.push(
+                    repositoryFactory.createMetadataRepository().search({
                         targetId: new MosaicId(mosaic.mosaicIdHex),
                         metadataType: MetadataType.Mosaic,
-                    })
-                    .pipe(map((metadataListPage) => metadataListPage.data.map((metadata) => new MetadataModel(metadata))))
-                    .subscribe((t) => {
-                        t.map((value) => {
-                            if (!mosaic.metadataList.find((o) => o.metadataId === value.metadataId)) {
-                                mosaic.metadataList.push(value);
-                            }
-                        });
-                        const currentSignerAddress: Address = rootGetters['account/currentSignerAddress'];
-                        if (!currentSignerAddress) {
-                            return;
-                        }
-                        commit('myCollection', {
-                            mosaics: mosaics,
-                            currentSignerAddress,
-                            networkCurrency,
-                            mosaicMetadataList,
-                        });
-                    })
-                    .add(() => commit('isFetchingMyCollection', false));
+                    }),
+                );
             });
+            combineLatest(observables)
+                .subscribe((metadataMosaics) => {
+                    const metadataList: MetadataModel[] = [];
+                    metadataMosaics.map((mosaic) => {
+                        if (mosaic.data.length > 0) {
+                            metadataList.push(new MetadataModel(mosaic.data[0]));
+                        }
+                    });
+                    const currentSignerAddress: Address = rootGetters['account/currentSignerAddress'];
+                    if (!currentSignerAddress) {
+                        return;
+                    }
+                    commit('myCollection', { mosaics, currentSignerAddress, mosaicMetadataList: metadataList });
+                })
+                .add(() => commit('isFetchingMyCollection', false));
         },
         SIGNER_CHANGED({ dispatch, rootGetters }) {
             const currentSignerAddress: Address = rootGetters['account/currentSignerAddress'];
