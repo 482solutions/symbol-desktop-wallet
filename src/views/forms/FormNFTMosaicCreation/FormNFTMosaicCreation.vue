@@ -26,7 +26,7 @@
                                 :value="formItems.rootNamespace"
                                 label="Root namespace"
                                 :namespaces="fertileNamespaces"
-                                :parent-namespace="true"
+                                :root-namespace="true"
                                 @input="setParentNamespaceName"
                             />
                             <FormRow>

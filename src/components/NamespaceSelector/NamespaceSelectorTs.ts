@@ -62,6 +62,12 @@ export class NamespaceSelectorTs extends Vue {
     @Prop({ default: false }) disableUnlinked: boolean;
 
     /**
+     * Level 1 namespace only
+     * @type {boolean}
+     */
+    @Prop({ default: false }) rootNamespace: boolean;
+
+    /**
      * Level 1,2 namespace
      * @type {boolean}
      */
@@ -92,6 +98,9 @@ export class NamespaceSelectorTs extends Vue {
         if (this.parentNamespace) {
             return this.parentNamespaces;
         }
+        if (this.rootNamespace) {
+            return this.rootNamespaces;
+        }
         if (this.nonParentNamespace) {
             return this.nonParentNamespaces;
         }
@@ -119,6 +128,9 @@ export class NamespaceSelectorTs extends Vue {
         return this.namespaces.filter((n) => n.depth !== 3);
     }
 
+    get rootNamespaces() {
+        return this.namespaces.filter((n) => n.depth === 1);
+    }
     /**
      * Filter level 3 subnamespace
      */
