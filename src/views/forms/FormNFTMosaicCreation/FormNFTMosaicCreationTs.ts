@@ -68,9 +68,10 @@ import { NamespaceModel } from '@/core/database/entities/NamespaceModel';
 import { FilterHelpers } from '@/core/utils/FilterHelpers';
 // @ts-ignore
 import AssetFormPageWrap from '@/views/pages/assets/AssetFeeWrap/AssetFeeWrap.vue';
+import { MarketplaceConfig } from '@/config';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const ipfsClient = require('ipfs-http-client');
-const ipfs = ipfsClient('https://ipfs.infura.io:5001');
+const ipfs = ipfsClient(MarketplaceConfig.ipfsNode);
 @Component({
     components: {
         AssetFormPageWrap,
@@ -118,7 +119,6 @@ export class FormNFTMosaicCreationTs extends FormTransactionBase {
         rootNamespace: '',
         subNamespace: '',
         registrationType: NamespaceRegistrationType.SubNamespace,
-        title: '',
         description: '',
         nftFile: '',
     };
@@ -127,7 +127,7 @@ export class FormNFTMosaicCreationTs extends FormTransactionBase {
     /**
      * Uploaded file name
      */
-    fileName = '';
+    fileData: { name: string; type: string; blob: string } = { name: '', type: '', blob: '' };
 
     protected get fertileNamespaces(): NamespaceModel[] {
         const maxNamespaceDepth = this.networkConfiguration.maxNamespaceDepth;
@@ -150,22 +150,21 @@ export class FormNFTMosaicCreationTs extends FormTransactionBase {
 
         this.formItems.rootNamespace = '';
         this.formItems.subNamespace = '';
-        this.formItems.title = '';
         this.formItems.description = '';
         this.formItems.nftFile = '';
-        this.fileName = '';
+        this.fileData = { name: '', type: '', blob: '' };
 
         // - maxFee must be absolute
         this.formItems.maxFee = this.defaultFee;
     }
     protected async onBeforeUpload(file): Promise<void> {
         const ipfsHash = await ipfs.add(file);
-        this.fileName = file.name;
+        this.fileData = { name: file.name, blob: URL.createObjectURL(file), type: file.type };
         this.formItems.nftFile = ipfsHash.path;
     }
     protected formatNFTInfo(CID: string): { title: string; CID: string; description: string } {
         return {
-            title: this.formItems.title,
+            title: `${this.formItems.rootNamespace}.${this.formItems.subNamespace}`,
             description: this.formItems.description,
             CID,
         };
@@ -282,7 +281,7 @@ export class FormNFTMosaicCreationTs extends FormTransactionBase {
         } = {
             rootNamespace: this.formItems.rootNamespace,
             subNamespace: this.formItems.subNamespace,
-            title: this.formItems.title,
+            title: `${this.formItems.rootNamespace}.${this.formItems.subNamespace}`,
             nftFile: this.formItems.nftFile,
             maxFee: this.formItems.maxFee,
         };
@@ -301,8 +300,7 @@ export class FormNFTMosaicCreationTs extends FormTransactionBase {
             this.formItems.rootNamespace.length > 0 ||
             this.formItems.subNamespace.length > 0 ||
             this.formItems.nftFile.length > 0 ||
-            this.fileName.length > 0 ||
-            this.formItems.title.length > 0 ||
+            this.fileData.name.length > 0 ||
             this.formItems.description.length > 0
         );
     }

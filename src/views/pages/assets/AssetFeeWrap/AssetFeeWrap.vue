@@ -13,6 +13,15 @@
                     The account from which the token will be created. Will own the token by default
                 </div>
                 <div class="asset-description-sub-title">
+                    NFT Root Namespace
+                </div>
+                <div class="asset-description-text">
+                    The root namespace for new NFT Mosaic. You can create new root namespace in
+                    <span style="color: #44004e; cursor: pointer;" @click="$router.push({ name: 'namespaces.createRootNamespace' })">
+                        Create root namespace
+                    </span>
+                </div>
+                <div class="asset-description-sub-title">
                     NFT Title
                 </div>
                 <div class="asset-description-text">

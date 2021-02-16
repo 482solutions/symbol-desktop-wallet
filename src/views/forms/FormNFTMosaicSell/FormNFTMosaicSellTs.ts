@@ -24,8 +24,6 @@ import MaxFeeAndSubmit from '@/components/MaxFeeAndSubmit/MaxFeeAndSubmit.vue';
 // @ts-ignore
 import MaxFeeSelector from '@/components/MaxFeeSelector/MaxFeeSelector.vue';
 // @ts-ignore
-import MosaicSelector from '@/components/MosaicSelector/MosaicSelector.vue';
-// @ts-ignore
 import NamespaceSelector from '@/components/NamespaceSelector/NamespaceSelector.vue';
 // @ts-ignore
 import SignerSelector from '@/components/SignerSelector/SignerSelector.vue';

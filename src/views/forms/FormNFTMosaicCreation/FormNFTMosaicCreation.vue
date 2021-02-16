@@ -22,20 +22,37 @@
                                     </div>
                                 </template>
                             </FormRow>
+                            <NamespaceSelector
+                                :value="formItems.rootNamespace"
+                                label="Root namespace"
+                                :namespaces="fertileNamespaces"
+                                :root-namespace="true"
+                                @input="setParentNamespaceName"
+                            />
+                            <span
+                                style="color: #44004e; cursor: pointer;"
+                                @click="$router.push({ name: 'namespaces.createRootNamespace' })"
+                            >
+                                Create root namespace
+                            </span>
+
                             <FormRow>
-                                <template v-slot:label>NFT Title</template>
+                                <template v-slot:label> NFT Title: </template>
                                 <template v-slot:inputs>
                                     <ValidationProvider
                                         v-slot="{ errors }"
-                                        vid="nftTitle"
-                                        name="NFT title"
-                                        rules="required|max:40"
+                                        vid="form_label_child_namespace_name"
+                                        :name="$t('form_label_namespace_name')"
+                                        :rules="{
+                                            required: true,
+                                            regex: '^[a-z0-9]{1}[a-z0-9-_]{0,40}$',
+                                        }"
                                         tag="div"
                                         class="inputs-container"
                                     >
                                         <ErrorTooltip :errors="errors">
                                             <input
-                                                v-model="formItems.title"
+                                                v-model="formItems.subNamespace"
                                                 class="input-size input-style"
                                                 placeholder="Title of NFT Mosaic"
                                                 type="text"
@@ -45,11 +62,11 @@
                                 </template>
                             </FormRow>
                             <FormRow>
-                                <template v-slot:label>NFT Description</template>
+                                <template v-slot:label>NFT Description: </template>
                                 <template v-slot:inputs>
                                     <ValidationProvider
                                         v-slot="{ errors }"
-                                        vid="nftdescription"
+                                        vid="description"
                                         name="NFT description"
                                         rules="required|max:100"
                                         tag="div"
@@ -66,46 +83,53 @@
                                     </ValidationProvider>
                                 </template>
                             </FormRow>
-                            <NamespaceSelector
-                                :value="formItems.rootNamespace"
-                                label="form_label_parent_namespace"
-                                :namespaces="fertileNamespaces"
-                                :parent-namespace="true"
-                                @input="setParentNamespaceName"
-                            />
-                            <NamespaceNameInput
-                                v-model="formItems.subNamespace"
-                                :is-need-auto-focus="false"
-                                :namespace-registration-type="formItems.registrationType"
-                                @input="stripTagsNamespaceName"
-                            />
                         </div>
                         <div class="upload-qrcode-container">
                             <div class="upload-qrcode-left-pane">
                                 <Upload
-                                    v-model="fileName"
+                                    v-model="fileData"
                                     :multiple="false"
                                     action="no action"
                                     type="drag"
                                     accept=".jpg,.jpeg,.png,.gif,.svg,.mp4,.mpeg4"
                                     :before-upload="onBeforeUpload"
-                                    :max-size="20000"
+                                    :max-size="20480"
                                 >
                                     <div>
-                                        <div v-if="fileName" class="upload-qrcode-preview">
+                                        <div v-if="fileData.blob" class="upload-qrcode-preview">
                                             <div>
-                                                <span>{{ fileName }}</span>
+                                                <span>{{ fileData.name }}</span>
+                                            </div>
+                                            <div class="card-container-image">
+                                                <img
+                                                    v-if="fileData.type && fileData.type.indexOf('image') !== -1"
+                                                    :src="fileData.blob"
+                                                    :alt="fileData.name"
+                                                    :title="fileData.name"
+                                                    class="card-image"
+                                                />
+                                                <video
+                                                    v-else-if="fileData.type && fileData.type.indexOf('video') !== -1"
+                                                    autoplay
+                                                    muted
+                                                    loop
+                                                    :src="fileData.blob"
+                                                    class="card-image"
+                                                    :type="fileData.type"
+                                                />
                                             </div>
                                         </div>
 
-                                        <Icon v-if="!fileName" type="ios-cloud-upload"></Icon>
-                                        <p>
-                                            Drag and Drop file to upload on a service.
-                                        </p>
-                                        <p>
-                                            This file will be uploaded to the network and connected to your token. Available formats: .jpg,
-                                            .png, .svg, .gif, .mp4, .mpeg4. Maximum size: 20MB.
-                                        </p>
+                                        <div v-if="!fileData.blob" style="width: 2.5rem;">
+                                            <Icon type="ios-cloud-upload"></Icon>
+                                            <p>
+                                                Drag and Drop file to upload on a service.
+                                            </p>
+                                            <p>
+                                                This file will be uploaded to the network and connected to your token. Available formats:
+                                                .jpg, .png, .svg, .gif, .mp4, .mpeg4. Maximum size: 20MB.
+                                            </p>
+                                        </div>
                                     </div>
                                 </Upload>
                             </div>
