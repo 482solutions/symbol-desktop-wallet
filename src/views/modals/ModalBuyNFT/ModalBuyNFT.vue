@@ -3,7 +3,9 @@
         <Modal v-model="show" :title="$t('modal_title_buy_nft')" :transfer="false" @close="show = false">
             <div class="create-nft-mosaic-form">
                 <div class="token-preview">
-                    <div class="card-info-title">{{ title }}</div>
+                    <a :href="'http://explorer.testnet.symboldev.network/mosaics/' + mosaicId" class="token-link" target="_blank">{{
+                        title
+                    }}</a>
                     <Spin v-if="!fileBlob || !fileType" size="large" />
                     <img v-if="fileBlob && fileType && fileType.indexOf('image') !== -1" :src="fileBlob" class="card-image" />
                     <video
