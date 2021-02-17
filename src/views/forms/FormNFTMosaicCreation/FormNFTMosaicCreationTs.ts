@@ -165,7 +165,7 @@ export class FormNFTMosaicCreationTs extends FormTransactionBase {
     }
     protected formatNFTInfo(CID: string): { title: string; CID: string; description: string } {
         return {
-            title: `${this.formItems.rootNamespace}.${this.formItems.subNamespace}`,
+            title: this.formItems.subNamespace,
             description: this.formItems.description,
             CID,
         };
@@ -282,7 +282,7 @@ export class FormNFTMosaicCreationTs extends FormTransactionBase {
         } = {
             rootNamespace: this.formItems.rootNamespace,
             subNamespace: this.formItems.subNamespace,
-            title: `${this.formItems.rootNamespace}.${this.formItems.subNamespace}`,
+            title: this.formItems.subNamespace,
             nftFile: this.formItems.nftFile,
             maxFee: this.formItems.maxFee,
         };
