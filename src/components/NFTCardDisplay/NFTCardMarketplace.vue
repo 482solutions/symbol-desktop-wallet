@@ -52,9 +52,8 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import { MosaicModel } from '@/core/database/entities/MosaicModel';
-import { FormTransactionBase } from '@/views/forms/FormTransactionBase/FormTransactionBase';
 import ModalBuyNFT from '@/views/modals/ModalBuyNFT/ModalBuyNFT.vue';
 
 @Component({
@@ -62,7 +61,7 @@ import ModalBuyNFT from '@/views/modals/ModalBuyNFT/ModalBuyNFT.vue';
         ModalBuyNFT,
     },
 })
-export default class NFTCardMarketplace extends FormTransactionBase {
+export default class NFTCardMarketplace extends Vue {
     currentTime: string = null;
     @Prop({ required: true }) readonly title: string;
     @Prop({ required: true }) readonly description: string;
@@ -92,7 +91,6 @@ export default class NFTCardMarketplace extends FormTransactionBase {
         setInterval(() => this.updateExpiresTime(), 1000);
         this.getResource(`https://ipfs.io/ipfs/${this.cid}`);
     }
-
     updateExpiresTime() {
         const endDate = this.$moment(this.endDate * 1000);
         const duration = this.$moment.duration(endDate.diff(this.$moment()));

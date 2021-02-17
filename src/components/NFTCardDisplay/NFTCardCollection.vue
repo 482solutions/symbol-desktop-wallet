@@ -100,6 +100,7 @@ export default class NFTCardCollection extends Vue {
     public fileType: string = '';
     public showTokenDetails: boolean = false;
     created() {
+        this.onMarketplace = this.isNFTMosaicOnMarketPlace();
         this.getResource(`https://ipfs.io/ipfs/${this.cid}`);
     }
     getResource(url: string) {
@@ -112,11 +113,8 @@ export default class NFTCardCollection extends Vue {
             })
             .catch(console.error);
     }
-    checkNFTMosaicOnMarketPlace(id: string): boolean {
-        if (this.marketplaceList.find((x) => x.id.toHex() === id) == -1) {
-            return false;
-        }
-        return true;
+    isNFTMosaicOnMarketPlace(): boolean {
+        return this.marketplaceList.findIndex((x) => x.id.toHex() === this.mosaicId) !== -1;
     }
 }
 </script>

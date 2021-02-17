@@ -17,9 +17,8 @@
                     />
                 </div>
 
-                <div class="create-nft-mosaic-left" style="padding-top: 20px;">
-                    <!--                    <div class="card-info-time">Creator: {{ nftInfo.creator }}</div>-->
-                    <!--                    <div class="card-info-time">Seller: {{ nftInfo.seller }}</div>-->
+                <div v-if="sellerAccountAddress" class="create-nft-mosaic-left" style="padding-top: 20px;">
+                    <div class="card-info-time">Seller: {{ sellerAccountAddress.plain() }}</div>
                     <div class="card-info-time">Description: {{ description }}</div>
                     <div class="card-info-time">Expires in: {{ time }}</div>
                     <div class="card-info-time">Total supply: {{ 1 }}</div>
