@@ -172,13 +172,13 @@ export class ModalBuyNFTts extends FormTransactionBase {
         }
         this.resetForm();
         this.hasConfirmationModal = false;
+        this.show = false;
         this.$emit('on-confirmation-success');
         this.removeTokenFromMarketRequest();
     }
 
     protected getTransactions(): Transaction[] {
         const isCreator = this.currentMosaic.ownerAddress.plain() === this.sellerAccountAddress.plain();
-        console.log(isCreator);
         this.nftInfo = ModalBuyNFTts.nftPrice(Number(this.price), this.maxFee, this.hours, isCreator);
         const mosaicId = new MosaicId(this.mosaicId);
         const transactionsArray = [this.createTransferServiceFeeTx(), this.buyerToSellerTx(), this.sellerToBuyerTx({ mosaicId })];
