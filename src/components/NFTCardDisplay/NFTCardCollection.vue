@@ -14,9 +14,7 @@
             />
         </div>
         <div class="card-container-info">
-            <a :href="'http://explorer.testnet.symboldev.network/mosaics/' + mosaicId" class="card-info-title" target="_blank">{{
-                title
-            }}</a>
+            <a :href="'http://explorer.testnet.symboldev.network/mosaics/' + mosaicId" class="token-link" target="_blank">{{ title }}</a>
             <div class="card-actions">
                 <button
                     class="button-style inverted-button fat-button"
