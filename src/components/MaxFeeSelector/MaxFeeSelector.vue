@@ -23,6 +23,7 @@
         <span v-else-if="transactionFees.minFeeMultiplier" style="color: #ff9600;">
             {{ `${$t('minimal_fee_transaction') + transactionFees.minFeeMultiplier}` }}
         </span>
+        <span v-if="additionalText" style="color: #a72391; margin-top: 10px;">{{ additionalText }}</span>
     </div>
 </template>
 

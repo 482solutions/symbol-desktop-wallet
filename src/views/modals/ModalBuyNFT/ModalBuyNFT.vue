@@ -26,7 +26,12 @@
                     <div class="card-info-time">Total supply: {{ 1 }}</div>
                     <div class="card-info-time">XYM: {{ price }}</div>
 
-                    <MaxFeeAndSubmit v-model="maxFee" submit-button-text="Buy now" @button-clicked="onSubmit" />
+                    <MaxFeeAndSubmit
+                        v-model="maxFee"
+                        submit-button-text="Buy now"
+                        additional-text="The deal will be completed and the token will appear in your collection when the seller confirms the deal."
+                        @button-clicked="onSubmit"
+                    />
                 </div>
             </div>
 
