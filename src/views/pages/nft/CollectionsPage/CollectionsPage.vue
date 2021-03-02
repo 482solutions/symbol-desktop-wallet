@@ -14,7 +14,6 @@
                 :title="item.nftData.title"
                 :mosaic-id="item.hexId"
                 :cid="item.nftData.CID"
-                :on-marketplace="item.onMarketplace"
             />
         </div>
         <ModalNFTMosaicCreate v-if="showCreateMosaicModal" :visible="showCreateMosaicModal" @close="showCreateMosaicModal = false" />

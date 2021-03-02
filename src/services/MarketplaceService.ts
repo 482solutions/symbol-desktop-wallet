@@ -23,6 +23,7 @@ interface MosaicAdditionalData {
     price: number;
     endDate: number;
     holder: string;
+    market: boolean;
     hours: number;
 }
 /// end-region protected helpers
@@ -48,8 +49,9 @@ export class MarketplaceService {
                     mosaic.metadataList = [];
                     const additionalData = this.getMosaicDataById(dataJson, mosaic.id.toHex());
                     mosaic.price = additionalData.price;
-                    mosaic.endDate = additionalData.date;
+                    mosaic.endDate = additionalData.market;
                     mosaic.holder = additionalData.holder;
+                    mosaic.market = additionalData.date === additionalData.market;
                     mosaic.hours = additionalData.hours;
                     repositoryFactory
                         .createMetadataRepository()
@@ -69,9 +71,9 @@ export class MarketplaceService {
         return from([mosaicMarketplaceInfo]);
     }
     private getMosaicDataById(
-        data: { id: string; price: number; date: number; holder: string; hours: number }[],
+        data: { id: string; price: number; date: number; holder: string; hours: number; market: number }[],
         id: string,
-    ): { id: string; price: number; date: number; holder: string; hours: number } {
+    ): { id: string; price: number; date: number; holder: string; hours: number; market: number } {
         return data.find((o) => o.id === id);
     }
 }

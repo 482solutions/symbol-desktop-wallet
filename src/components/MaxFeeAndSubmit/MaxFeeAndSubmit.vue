@@ -8,7 +8,6 @@
                     :calculated-recommended-fee="calculatedRecommendedFee"
                     :calculated-highest-fee="calculatedHighestFee"
                     :show-low-fee-warning="showWarnings && anyWarnings && isFeeLowerThanRecommendedFee"
-                    :additional-text="additionalText"
                 />
                 <div v-if="!hideSubmit" class="ml-2">
                     <button
@@ -77,11 +76,6 @@ export default class MaxFeeAndSubmit extends Vue {
      * Submit button classes
      */
     @Prop({ default: 'inverted-button' }) submitButtonClasses: string;
-
-    /**
-     * Additional text
-     */
-    @Prop({ default: false }) additionalText: string;
 
     /**
      * Get max fee value from the value prop

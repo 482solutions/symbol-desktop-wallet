@@ -80,7 +80,6 @@ export default class NftMarketplacePage extends Vue {
                 // - map table fields
                 return {
                     hexId: mosaicInfo.id.toHex(),
-                    // name: mosaicInfo.name || 'N/A',
                     supply: mosaicInfo.supply.toLocaleString(),
                     divisibility: mosaicInfo.divisibility,
                     price: mosaicInfo.price,
@@ -89,9 +88,10 @@ export default class NftMarketplacePage extends Vue {
                     seller: mosaicInfo.holder,
                     creator: mosaicInfo.ownerAddress.plain(),
                     nftData: metadata[0],
+                    market: mosaicInfo.market,
                 };
             })
-            .filter((x) => x);
+            .filter((x) => x.market);
     }
 }
 </script>
