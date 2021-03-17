@@ -139,6 +139,9 @@ export class AccountDetailsPageTs extends Vue {
      * Error notification handler
      */
     private errorNotificationHandler(error: any) {
+        if (error.message && error.message.includes('cannot open device with path')) {
+            error.errorCode = 'ledger_connected_other_app';
+        }
         if (error.errorCode) {
             switch (error.errorCode) {
                 case 'NoDevice':
@@ -146,6 +149,9 @@ export class AccountDetailsPageTs extends Vue {
                     return;
                 case 'ledger_not_supported_app':
                     this.$store.dispatch('notification/ADD_ERROR', 'ledger_not_supported_app');
+                    return;
+                case 'ledger_connected_other_app':
+                    this.$store.dispatch('notification/ADD_ERROR', 'ledger_connected_other_app');
                     return;
                 case 'ledger_not_correct_account':
                     this.$store.dispatch('notification/ADD_ERROR', 'ledger_not_correct_account');
@@ -181,10 +187,17 @@ export class AccountDetailsPageTs extends Vue {
                 throw { errorCode: 'ledger_not_supported_app' };
             }
             const currentPath = this.currentAccount.path;
+            const isOptinLedgerWallet = this.currentAccount.type === AccountType.LEDGER_OPT_IN;
             this.$store.dispatch('notification/ADD_SUCCESS', 'verify_device_information');
-            const currentAccount = await this.accountService.getLedgerAccountByPath(this.currentProfile, networkType, currentPath);
+            const currentAccount = await this.accountService.getLedgerAccountByPath(
+                this.currentProfile,
+                networkType,
+                currentPath,
+                true,
+                isOptinLedgerWallet,
+            );
             const accountPublicKey = currentAccount.publicKey.toUpperCase();
-            if (accountPublicKey === this.currentAccount.publicKey) {
+            if (accountPublicKey === this.currentAccount.publicKey.toUpperCase()) {
                 this.$store.dispatch('notification/ADD_SUCCESS', 'ledger_correct_account');
             } else {
                 throw { errorCode: 'ledger_not_correct_account' };
@@ -211,7 +224,11 @@ export class AccountDetailsPageTs extends Vue {
     }
 
     public get isLedger(): boolean {
-        return this.currentAccount.type == AccountType.LEDGER;
+        return this.currentAccount.type === AccountType.LEDGER || this.currentAccount.type === AccountType.LEDGER_OPT_IN;
+    }
+
+    public get isOptinAccount(): boolean {
+        return this.currentAccount.type === AccountType.OPT_IN || this.currentAccount.type === AccountType.LEDGER_OPT_IN;
     }
 
     /**

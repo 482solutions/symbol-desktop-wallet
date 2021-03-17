@@ -19,7 +19,6 @@ import { mapGetters } from 'vuex';
 import { AccountInfo } from 'symbol-sdk';
 import { HarvestedBlockStats, HarvestingStatus } from '@/store/Harvesting';
 import { NetworkCurrencyModel } from '@/core/database/entities/NetworkCurrencyModel';
-
 @Component({
     computed: {
         ...mapGetters({
@@ -37,9 +36,13 @@ export class HarvestStatisticsPanelTs extends Vue {
     public harvestedBlockStats: HarvestedBlockStats;
     public isFetchingHarvestedBlockStats: boolean;
     public networkCurrency: NetworkCurrencyModel;
+    private timeIntervals: any[];
 
     created() {
         this.refresh();
+        this.timeIntervals = [];
+        this.checkUnLockedAccounts();
+        this.refreshStatusBlocks();
     }
 
     public refresh() {
@@ -70,8 +73,42 @@ export class HarvestStatisticsPanelTs extends Vue {
         }
     }
 
-    public get totalFeesEarned() {
-        return this.harvestedBlockStats.totalFeesEarned.compact() / Math.pow(10, this.networkCurrency.divisibility);
+    private checkUnLockedAccounts(): void {
+        Vue.nextTick(() => {
+            this.timeIntervals.push(
+                setInterval(() => {
+                    if (this.harvestingStatus == HarvestingStatus.INPROGRESS_ACTIVATION) {
+                        this.refreshHarvestingStatus();
+                    }
+                }, 45000),
+            );
+        });
+    }
+
+    private refreshStatusBlocks(): void {
+        Vue.nextTick(() => {
+            this.timeIntervals.push(
+                setInterval(() => {
+                    if (this.harvestingStatus == HarvestingStatus.ACTIVE) {
+                        this.refreshHarvestingStats();
+                    }
+                }, 30000),
+            );
+        });
+    }
+
+    private destroyed() {
+        this.timeIntervals.forEach((timeout) => clearInterval(timeout));
+    }
+    public get totalFeesEarned(): string {
+        const relativeAmount = this.harvestedBlockStats.totalFeesEarned.compact() / Math.pow(10, this.networkCurrency.divisibility);
+        if (relativeAmount === 0) {
+            return '0';
+        }
+        return relativeAmount.toLocaleString(undefined, {
+            minimumFractionDigits: 1,
+            maximumFractionDigits: this.networkCurrency.divisibility,
+        });
     }
 
     @Watch('currentSignerAccountInfo')

@@ -30,15 +30,15 @@ export class LedgerService {
             this.transport = await this.openTransport();
             const symbolLedger = new SymbolLedger(this.transport, 'XYM');
             const result = await symbolLedger.isAppSupported();
-            await this.closeTransport();
             return result;
         } catch (error) {
-            await this.closeTransport();
             throw this.formatError(error);
+        } finally {
+            await this.closeTransport();
         }
     }
 
-    public async getAccount(path: string, display: boolean) {
+    public async getAccount(path: string, display: boolean, isOptinLedgerWallet: boolean) {
         try {
             if (!DerivationPathValidator.validate(path, this.networkType)) {
                 const errorMessage = 'Invalid derivation path: ' + path;
@@ -46,16 +46,22 @@ export class LedgerService {
             }
             this.transport = await this.openTransport();
             const symbolLedger = new SymbolLedger(this.transport, 'XYM');
-            const result = await symbolLedger.getAccount(path, this.networkType, display, false);
-            await this.closeTransport();
+            const result = await symbolLedger.getAccount(path, this.networkType, display, false, isOptinLedgerWallet);
             return result;
         } catch (error) {
-            await this.closeTransport();
             throw this.formatError(error);
+        } finally {
+            await this.closeTransport();
         }
     }
 
-    public async signTransaction(path: string, transferTransaction: any, networkGenerationHash: string, signerPublicKey: string) {
+    public async signTransaction(
+        path: string,
+        transferTransaction: any,
+        networkGenerationHash: string,
+        signerPublicKey: string,
+        isOptinLedgerWallet: boolean,
+    ) {
         try {
             if (!DerivationPathValidator.validate(path, this.networkType)) {
                 const errorMessage = 'Invalid derivation path: ' + path;
@@ -63,16 +69,27 @@ export class LedgerService {
             }
             this.transport = await this.openTransport();
             const symbolLedger = new SymbolLedger(this.transport, 'XYM');
-            const result = await symbolLedger.signTransaction(path, transferTransaction, networkGenerationHash, signerPublicKey);
-            await this.closeTransport();
+            const result = await symbolLedger.signTransaction(
+                path,
+                transferTransaction,
+                networkGenerationHash,
+                signerPublicKey,
+                isOptinLedgerWallet,
+            );
             return result;
         } catch (error) {
-            await this.closeTransport();
             throw this.formatError(error);
+        } finally {
+            await this.closeTransport();
         }
     }
 
-    public async signCosignatureTransaction(path: string, cosignatureTransaction: any, signerPublicKey: string) {
+    public async signCosignatureTransaction(
+        path: string,
+        cosignatureTransaction: any,
+        signerPublicKey: string,
+        isOptinLedgerWallet: boolean,
+    ) {
         try {
             if (!DerivationPathValidator.validate(path, this.networkType)) {
                 const errorMessage = 'Invalid derivation path: ' + path;
@@ -80,12 +97,17 @@ export class LedgerService {
             }
             this.transport = await this.openTransport();
             const symbolLedger = new SymbolLedger(this.transport, 'XYM');
-            const result = await symbolLedger.signCosignatureTransaction(path, cosignatureTransaction, signerPublicKey);
-            await this.closeTransport();
+            const result = await symbolLedger.signCosignatureTransaction(
+                path,
+                cosignatureTransaction,
+                signerPublicKey,
+                isOptinLedgerWallet,
+            );
             return result;
         } catch (error) {
-            await this.closeTransport();
             throw this.formatError(error);
+        } finally {
+            await this.closeTransport();
         }
     }
 }

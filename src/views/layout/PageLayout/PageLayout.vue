@@ -4,6 +4,7 @@
             <Alert class="alert warning_alert" type="error">
                 <Icon type="ios-warning-outline" />
                 {{ $t(`${alert.message}`) }}
+                <a v-if="alert.showRetry" @click="reconnect">{{ $t('click_to_retry') }}</a>
             </Alert>
         </div>
         <div v-else-if="info.show">
@@ -25,7 +26,7 @@
                     <!--<WindowControls />-->
 
                     <div class="level-right">
-                        <ImportQRButton v-if="!!currentAccount" class="level-item navbar-item" valid-qr-types="[1, 3, 4]" />
+                        <ImportQRButton v-if="!!currentAccount" class="level-item navbar-item" valid-qr-types="[1, 3, 4, 8, 9]" />
                         <AccountLinks
                             v-if="isTestnet"
                             :account="currentAccount"
@@ -41,8 +42,9 @@
                             :title="$t('accounts_links_explorer')"
                             class="level-item navbar-item"
                         />
-                        <AccountSelectorField class="level-item navbar-item" @input="onChangeAccount" />
+                        <AccountSelectorField class="level-item navbar-item" :enable-min-width="true" @input="onChangeAccount" />
                         <Settings class="level-item navbar-item" />
+                        <LogoutButton />
                     </div>
                 </div>
                 <transition name="fade" mode="out-in">
@@ -51,7 +53,7 @@
                     </div>
                 </transition>
                 <div class="footer">
-                    <span class="footer-phrase">Powered by <b>NEM Technology.</b></span>
+                    <span class="footer-phrase">{{ $t('copyright') }}</span>
                 </div>
             </div>
         </div>

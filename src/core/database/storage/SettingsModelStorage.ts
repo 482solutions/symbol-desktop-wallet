@@ -17,6 +17,7 @@
 import { VersionedObjectStorage } from '@/core/database/backends/VersionedObjectStorage';
 import { SettingsModel } from '@/core/database/entities/SettingsModel';
 import { networkConfig } from '@/config';
+import { NetworkType } from 'symbol-sdk';
 
 export class SettingsModelStorage extends VersionedObjectStorage<Record<string, SettingsModel>> {
     /**
@@ -40,7 +41,7 @@ export class SettingsModelStorage extends VersionedObjectStorage<Record<string, 
                     profiles.map((name: string) => {
                         modified[name] = {
                             ...modified[name],
-                            explorerUrl: networkConfig.explorerUrl,
+                            explorerUrl: networkConfig[NetworkType.TEST_NET].explorerUrl,
                         };
                     });
 
@@ -57,8 +58,8 @@ export class SettingsModelStorage extends VersionedObjectStorage<Record<string, 
                     settings.map((name: string) => {
                         modified[name] = {
                             ...modified[name],
-                            explorerUrl: networkConfig.explorerUrl,
-                            faucetUrl: networkConfig.faucetUrl,
+                            explorerUrl: networkConfig[NetworkType.TEST_NET].explorerUrl,
+                            faucetUrl: networkConfig[NetworkType.TEST_NET].faucetUrl,
                         };
                     });
 
@@ -71,6 +72,10 @@ export class SettingsModelStorage extends VersionedObjectStorage<Record<string, 
             },
             {
                 description: 'Reset accounts for 0.10.0.6 network (non backwards compatible)',
+                migrate: () => undefined,
+            },
+            {
+                description: 'Reset for Symbol mainet launch.',
                 migrate: () => undefined,
             },
         ]);

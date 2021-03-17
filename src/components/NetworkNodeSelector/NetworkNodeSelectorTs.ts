@@ -9,8 +9,9 @@ import FormWrapper from '@/components/FormWrapper/FormWrapper.vue';
 import FormRow from '@/components/FormRow/FormRow.vue';
 import { NodeModel } from '@/core/database/entities/NodeModel';
 import { URLHelpers } from '@/core/utils/URLHelpers';
-import { NodeInfo, RepositoryFactoryHttp, RoleType } from 'symbol-sdk';
+import { NetworkType, NodeInfo, RepositoryFactoryHttp, RoleType } from 'symbol-sdk';
 import { NotificationType } from '@/core/utils/NotificationType';
+import { ProfileModel } from '@/core/database/entities/ProfileModel';
 
 @Component({
     components: {
@@ -21,6 +22,8 @@ import { NotificationType } from '@/core/utils/NotificationType';
         ...mapGetters({
             repositoryFactory: 'network/repositoryFactory',
             peerNodes: 'network/peerNodes',
+            networkType: 'network/networkType',
+            currentProfile: 'profile/currentProfile',
         }),
     },
 })
@@ -37,6 +40,7 @@ export class NetworkNodeSelectorTs extends Vue {
 
     public peerNodes: NodeInfo[];
     public isFetchingNodeInfo = false;
+    public networkType: NetworkType;
     /**
      * Form items
      */
@@ -48,6 +52,7 @@ export class NetworkNodeSelectorTs extends Vue {
 
     public showInputPublicKey = false;
 
+    public currentProfile: ProfileModel;
     /**
      * Checks if the given node is eligible for harvesting
      * @protected
@@ -61,7 +66,14 @@ export class NetworkNodeSelectorTs extends Vue {
         // first check it in peer nodes
         const peerNode = this.filteredNodes.find((p) => p.host === value);
         if (peerNode && peerNode?.nodePublicKey) {
-            const nodeModel = new NodeModel(value, peerNode.friendlyName, false, peerNode.publicKey, peerNode.nodePublicKey);
+            const nodeModel = new NodeModel(
+                value,
+                peerNode.friendlyName,
+                false,
+                this.networkType,
+                peerNode.publicKey,
+                peerNode.nodePublicKey,
+            );
             Vue.set(this, 'showInputPublicKey', false);
             this.$emit('input', nodeModel);
             return;
@@ -74,7 +86,14 @@ export class NetworkNodeSelectorTs extends Vue {
             const nodeInfo = await nodeRepository.getNodeInfo().toPromise();
             this.formNodeUrl = value;
             if (nodeInfo.nodePublicKey) {
-                const nodeModel = new NodeModel(value, nodeInfo.friendlyName, false, nodeInfo.publicKey, nodeInfo.nodePublicKey);
+                const nodeModel = new NodeModel(
+                    value,
+                    nodeInfo.friendlyName,
+                    false,
+                    this.networkType,
+                    nodeInfo.publicKey,
+                    nodeInfo.nodePublicKey,
+                );
                 Vue.set(this, 'showInputPublicKey', false);
                 this.$emit('input', nodeModel);
             } else {
@@ -93,6 +112,10 @@ export class NetworkNodeSelectorTs extends Vue {
     public async created() {
         await this.$store.dispatch('network/LOAD_PEER_NODES');
         this.customNodeData = this.filteredNodes.map((n) => n.host);
+        const currentNodeUrl = this.currentProfile.selectedNodeUrlToConnect.replace(/http:|:3000|\//g, '');
+        if (this.customNodeData.includes(currentNodeUrl) && !this.value.url) {
+            this.fetchNodePublicKey(currentNodeUrl);
+        }
     }
 
     @Watch('value', { immediate: true })
@@ -133,7 +156,8 @@ export class NetworkNodeSelectorTs extends Vue {
                     node.roles?.some((role) => this.isIncluded(role)) &&
                     !node.host?.includes('ap-southeast-1.testnet') &&
                     !node.host.includes('us-east-1.testnet') &&
-                    !node.host.includes('eu-central-1.testnet'),
+                    !node.host.includes('eu-central-1.testnet') &&
+                    node.networkIdentifier === this.networkType,
             );
         }
         return this.peerNodes;

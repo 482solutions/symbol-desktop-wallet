@@ -16,6 +16,7 @@
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import {
     Account,
+    AccountAddressRestrictionTransaction,
     AggregateTransaction,
     AggregateTransactionCosignature,
     CosignatureTransaction,
@@ -42,6 +43,7 @@ import { CosignatureQR } from 'symbol-qr-library';
 import QRCodeDisplay from '@/components/QRCode/QRCodeDisplay/QRCodeDisplay.vue';
 import { AccountService } from '@/services/AccountService';
 import { LedgerService } from '@/services/LedgerService';
+import { AccountMetadataTransaction } from 'symbol-sdk';
 
 @Component({
     components: {
@@ -75,6 +77,11 @@ export class ModalTransactionCosignatureTs extends Vue {
      * Aggregate transaction fetched by transactionHash
      */
     transaction: AggregateTransaction = null;
+
+    /**
+     * Data is loading
+     */
+    protected isLoading: boolean = false;
 
     /**
      * Currently active account
@@ -139,7 +146,11 @@ export class ModalTransactionCosignatureTs extends Vue {
      */
     public get isUsingHardwareWallet(): boolean {
         // XXX should use "stagedTransaction.signer" to identify account
-        return AccountType.TREZOR === this.currentAccount.type || AccountType.LEDGER === this.currentAccount.type;
+        return (
+            this.currentAccount.type === AccountType.TREZOR ||
+            this.currentAccount.type === AccountType.LEDGER ||
+            this.currentAccount.type === AccountType.LEDGER_OPT_IN
+        );
     }
 
     public get needsCosignature(): boolean {
@@ -150,14 +161,18 @@ export class ModalTransactionCosignatureTs extends Vue {
                 return false;
             }
             const cosignerAddresses = this.transaction.innerTransactions.map((t) => t.signer?.address);
-            const modifyMultisigAddition = [];
+            const cosignList = [];
             this.transaction.innerTransactions.forEach((t) => {
                 if (t.type === TransactionType.MULTISIG_ACCOUNT_MODIFICATION.valueOf()) {
-                    modifyMultisigAddition.push(...(t as MultisigAccountModificationTransaction).addressAdditions);
+                    cosignList.push(...(t as MultisigAccountModificationTransaction).addressAdditions);
+                } else if (t.type === TransactionType.ACCOUNT_ADDRESS_RESTRICTION.valueOf()) {
+                    cosignList.push(...(t as AccountAddressRestrictionTransaction).restrictionAdditions);
+                } else if (t.type === TransactionType.ACCOUNT_METADATA) {
+                    cosignList.push((t as AccountMetadataTransaction).targetAddress);
                 }
             });
 
-            if (modifyMultisigAddition.find((m) => this.currentAccount.address === m.plain()) !== undefined) {
+            if (cosignList.find((m) => this.currentAccount.address === m.plain()) !== undefined) {
                 return true;
             }
             const cosignRequired = cosignerAddresses.find((c) => {
@@ -190,6 +205,7 @@ export class ModalTransactionCosignatureTs extends Vue {
 
     public get cosignatureQrCode(): CosignatureQR {
         // @ts-ignore
+        console.log(this.transaction);
         return new CosignatureQR(this.transaction, this.networkType, this.generationHash);
     }
 
@@ -197,6 +213,9 @@ export class ModalTransactionCosignatureTs extends Vue {
      * Error notification handler
      */
     private errorNotificationHandler(error: any) {
+        if (error.message && error.message.includes('cannot open device with path')) {
+            error.errorCode = 'ledger_connected_other_app';
+        }
         if (error.errorCode) {
             switch (error.errorCode) {
                 case 'NoDevice':
@@ -204,6 +223,9 @@ export class ModalTransactionCosignatureTs extends Vue {
                     return;
                 case 'ledger_not_supported_app':
                     this.$store.dispatch('notification/ADD_ERROR', 'ledger_not_supported_app');
+                    return;
+                case 'ledger_connected_other_app':
+                    this.$store.dispatch('notification/ADD_ERROR', 'ledger_connected_other_app');
                     return;
                 case 'ledger_not_correct_account':
                     this.$store.dispatch('notification/ADD_ERROR', 'ledger_not_correct_account');
@@ -236,6 +258,8 @@ export class ModalTransactionCosignatureTs extends Vue {
 
     @Watch('transactionHash', { immediate: true })
     public async fetchTransaction() {
+        this.isLoading = true;
+
         try {
             // first get the last status
             const transactionStatus: TransactionStatus = (await this.$store.dispatch('transaction/FETCH_TRANSACTION_STATUS', {
@@ -254,6 +278,8 @@ export class ModalTransactionCosignatureTs extends Vue {
         } catch (error) {
             console.log(error);
         }
+
+        this.isLoading = false;
     }
 
     /**
@@ -275,7 +301,7 @@ export class ModalTransactionCosignatureTs extends Vue {
 
     public async onSigner(transactionSigner: TransactionSigner) {
         // - sign cosignature transaction
-        if (this.currentAccount.type === AccountType.LEDGER) {
+        if (this.currentAccount.type === AccountType.LEDGER || this.currentAccount.type === AccountType.LEDGER_OPT_IN) {
             try {
                 const ledgerService = new LedgerService(this.currentProfile.networkType);
                 const isAppSupported = await ledgerService.isAppSupported();
@@ -283,13 +309,19 @@ export class ModalTransactionCosignatureTs extends Vue {
                     throw { errorCode: 'ledger_not_supported_app' };
                 }
                 const currentPath = this.currentAccount.path;
+                const isOptinLedgerWallet = this.currentAccount.type === AccountType.LEDGER_OPT_IN;
                 const addr = this.currentAccount.address;
                 const networkType = this.currentProfile.networkType;
                 const accountService = new AccountService();
                 this.$store.dispatch('notification/ADD_SUCCESS', 'verify_device_information');
-                const signerPublicKey = await accountService.getLedgerPublicKeyByPath(networkType, currentPath);
+                const signerPublicKey = await accountService.getLedgerPublicKeyByPath(networkType, currentPath, true, isOptinLedgerWallet);
                 if (signerPublicKey === this.currentAccount.publicKey.toLowerCase()) {
-                    const signature = await ledgerService.signCosignatureTransaction(currentPath, this.transaction, signerPublicKey);
+                    const signature = await ledgerService.signCosignatureTransaction(
+                        currentPath,
+                        this.transaction,
+                        signerPublicKey,
+                        isOptinLedgerWallet,
+                    );
                     this.$store.dispatch(
                         'diagnostic/ADD_DEBUG',
                         `Co-signed transaction with account ${addr} and result: ${JSON.stringify({
