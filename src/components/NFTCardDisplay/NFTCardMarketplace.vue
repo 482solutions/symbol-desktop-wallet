@@ -92,7 +92,8 @@ export default class NFTCardMarketplace extends Vue {
     updateExpiresTime() {
         const endDate = this.$moment(this.endDate * 1000);
         const duration = this.$moment.duration(endDate.diff(this.$moment()));
-        this.currentTime = `${duration.hours()}:${duration.minutes()}:${duration.seconds()}`;
+        const hours = duration.hours() * duration.days() + duration.hours();
+        this.currentTime = `${hours}:${duration.minutes()}:${duration.seconds()}`;
     }
 }
 </script>
